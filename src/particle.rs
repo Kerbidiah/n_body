@@ -6,12 +6,15 @@ use macroquad::{shapes, color};
 
 pub mod plain_random; // let rust know that src/particle/random.rs is related to this file
 pub mod belt_random;
-mod random_particle_generator;
-mod tools; // this referse to src/particle/tools.rs not src/tools.rs
+mod random_particle_gen;
+mod tools; // this refers to src/particle/tools.rs not src/tools.rs
 
-pub use plain_random::PlainRandomGen; // any use of particle.rs will automatically use particle/random.rs aswell
+// any use of particle.rs will automatically use particle/random.rs aswell
+pub use plain_random::PlainRandomGen;
+pub use tools::MinMax;
+pub use random_particle_gen::RandomParticleGen;
 pub use belt_random::BeltRandomGen;
-
+// pub use belt_random::
 
 
 /// a structure to represent a particle
@@ -24,7 +27,7 @@ pub struct Particle {
 	/// this is how big the object should be on screen and for collision detection.
 	/// store radius to avoid recomputing it for every collison check
 	/// it is only recomputed when mass changes
-	radius: f32,
+	pub radius: f32,
 	/// allows delaying particle deletion untill a later point in the game loop
 	pub collided: bool,
 }
@@ -124,19 +127,32 @@ impl Particle { // functions for particles
 	}
 
 	/// multiplier to adjust size of particles
-	const SIZE_MULTIPLIER: f32 = 0.05;
+	const SIZE_MULTIPLIER: f32 = 0.5;
 
 	/// recalculates the radius
 	/// The radius is determined by finding the radius of a sphere with a volume of `mass`
+	// pub fn radius(&mut self) {
+	// 	// FRAC_1_PI is 1/pi, multiplying by that is faster than dividing by pi, and is accurate enough
+	// 	self.radius = (0.75 * self.mass * FRAC_1_PI * Self::SIZE_MULTIPLIER).cbrt(); // cbrt is cube root
+	// }
+
+	/// recalculates the radius
+	/// The radius is determined by finding the radius of a circle with a volume of `mass`
 	pub fn radius(&mut self) {
 		// FRAC_1_PI is 1/pi, multiplying by that is faster than dividing by pi, and is accurate enough
-		self.radius = (0.75 * self.mass * FRAC_1_PI * Self::SIZE_MULTIPLIER).cbrt(); // cbrt is cube root
+		self.radius = (self.mass * FRAC_1_PI * Self::SIZE_MULTIPLIER).sqrt(); // cbrt is cube root
 	}
 	
-	/// draws particle on screen with given color relative to center of the screen.
+	/// draws particle as an empty circle on screen with given color relative to center of the screen.
 	/// x and y axis are adjusted to work the same way they do in a typical 2d coordinate plane.
 	pub fn draw(&self, color: color::Color) {
 		shapes::draw_circle(self.pos.x, self.pos.y, self.radius, color);
+	}
+
+	/// draws particle as an empty circle on screen with given color relative to center of the screen.
+	/// x and y axis are adjusted to work the same way they do in a typical 2d coordinate plane.
+	pub fn draw_line(&self, thickness: f32, color: color::Color) {
+		shapes::draw_circle_lines(self.pos.x, self.pos.y, self.radius, thickness, color);
 	}
 }
 

@@ -1,14 +1,13 @@
-use serde::{Serialize, Deserialize};
-
-use rayon::prelude::*;
-
 use rand::thread_rng;
 use rand::rngs::ThreadRng;
 
+use rayon::prelude::*;
+
 use super::Particle;
 
+
 /// a trait to define what a random particle generator is
-pub trait RandomParticleGenerator<'de>: Deserialize<'de> + Sync {
+pub trait RandomParticleGen: Sync {
 
 	/// generate a random particle with given settings
 	fn gen(&self, rng: &mut ThreadRng) -> Particle;

@@ -22,7 +22,6 @@ pub fn physics_loop(bodies: &mut Vec<RefCell<&mut Particle>>, steps_per: usize, 
 		
 		// calc collisions
 		collisions(bodies);
-		
 	}
 }
 
