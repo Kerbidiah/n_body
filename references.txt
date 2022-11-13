@@ -1,0 +1,7 @@
+rayon and rand: https://github.com/rust-random/rand/issues/398
+generate rand vec: https://stackoverflow.com/questions/48218459/how-do-i-generate-a-vector-of-random-numbers-in-a-range
+n-body vulkan implementation: https://youtu.be/GjbcvqEOIuE
+rust standard documentation: https://doc.rust-lang.org/std/index.html
+macroquad examples: https://github.com/not-fl3/macroquad/tree/master/examples
+package documentation: https://docs.rs
+rust backtrace: https://www.reddit.com/r/rust/comments/7h24y5/how_do_i_run_cargo_test_with_rust_backtrace1_on/

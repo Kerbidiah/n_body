@@ -1,0 +1,22 @@
+[package]
+name = "n_body"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+# this only applies to packages when compiled in debug mode
+[profile.dev.package."*"]
+opt-level = 3 # apply all optimizations
+
+[profile.release] # this applies when compiled in release mode
+strip = true # strip unnesescary symbols and debug information from the binary
+lto = true # enable full link time optimization (removes unused functions and duplicated functions etc)
+
+[dependencies] # the packages I am using
+anyhow = "1.0.66"
+iter_tools = "0.1.4" # used for some advanced iterating stuff
+macroquad = "0.3.25" # used for displaying stuff on screen
+rayon = "1.5.3" # used for easy parallel computing
+glam = {version = "0.21.3", features = ["rand"]} # used for vector math, enable the random feature
+rand = "0.8.5"
