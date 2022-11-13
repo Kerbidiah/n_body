@@ -83,8 +83,8 @@ impl MinMax {
 
     /// generate a random number, exclusive
     pub fn exc_rand(&self, rng: &mut ThreadRng) -> f32 {
-		// if the range specifies a specific number
-		if self.min == self.max {
+        // if the range specifies a specific number
+        if self.min == self.max {
             return self.max;
         }
         rng.gen_range(self.range_exc())
