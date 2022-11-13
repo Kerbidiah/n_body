@@ -5,8 +5,6 @@ use macroquad::color;
 use macroquad::camera::Camera2D;
 use macroquad::math::Vec2;
 
-// use iter_tools::Itertools;
-
 use rayon::prelude::*;
 
 pub mod particle; // lets rust know that particle.rs is part of our code and imports it
@@ -23,15 +21,15 @@ pub const COUNT: usize = 200;
 async fn main() {
 	// setup the camera
 	let mut cam = Camera2D::default();
-	cam.zoom *= 0.05;
+	cam.zoom *= 0.025;
 	set_camera(&cam); // the & means we are passing cam as a reference which means we keep ownership of cam
 
 	// generate random particles
 	let rand_gen_settings = particle::PlainRandomGen {
 		max_pos: 10.0,
-		max_vel: 0.5,
+		max_vel: 0.0,
 		min_mass: 0.1,
-		max_mass: 10.0
+		max_mass: 7.0
 	};
 
 	let mut bodies = rand_gen_settings.gen_multi(COUNT);
@@ -50,9 +48,8 @@ async fn main() {
 		})
 		.collect();
 	
-	dbg!();
+	// run collisions to get rid of all overlaping particles
 	physics::collisions(&mut bodies);
-	dbg!();
 
 	// setup frame and time stuff	
 	let mut frame_counter: u64 = 0;
@@ -66,9 +63,10 @@ async fn main() {
 			b.borrow().draw(color::colors::WHITE);
 		});
 
-		// debug print fps every 30 frames
+		// print debug info every 30 frames
 		if frame_counter % 30 == 0 {
 			dbg!(get_fps());
+			dbg!(bodies.len());
 		}
 		
 		frame_counter += 1;

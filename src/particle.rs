@@ -16,6 +16,7 @@ pub struct Particle {
 	pub vel: Vec2,
 	accel: Vec2, // not having pub makes this feild private
 	pub mass: f32,
+	/// this is how big the object should be on screen and for collision detection.
 	/// store radius to avoid recomputing it for every collison check
 	/// it is only recomputed when mass changes
 	radius: f32,
@@ -63,10 +64,10 @@ impl Particle { // functions for particles
 		other.pos - self.pos
 	}
 
-	/// this is probably faster than squaring then dividing
-	pub fn diff_neg2pow(&self, other: &Self) -> Vec2 {
-		self.diff(other).powf(-2.0)
-	}
+	// /// this is probably faster than squaring then dividing
+	// pub fn diff_neg2pow(&self, other: &Self) -> Vec2 {
+	// 	self.diff(other).powf(-2.0)
+	// }
 	
 	/// finds the distance from `self` to `other`
 	pub fn dist(&self, other: &Self) -> f32 {
@@ -97,24 +98,30 @@ impl Particle { // functions for particles
 	/// New mass is sum of the masses of the particles
 	/// `b.collided` is set to `true`
 	pub fn check_collision(a: &RefCell<&mut Self>, b: &RefCell<&mut Self>) {
-		let collision_dist = (a.borrow().radius + a.borrow().radius).powi(2); // we square because thats faster than doing a sqrt on distance
-		
-		if a.borrow().dist_sqrd(&b.borrow()) <= collision_dist {
-			
-		}
-		
-		let new_momentum = a.borrow().momentum() + b.borrow().momentum();
-		a.borrow_mut().mass += b.borrow().mass;
-		a.borrow_mut().radius();
-		a.borrow_mut().vel = new_momentum / a.borrow().mass;
 
-		b.borrow_mut().collided = true;
+		// if one of the bodies has already collided but hasn't yet been removed, skip colison checking on it
+		if !(a.borrow().collided || b.borrow().collided) {
+			// square because thats faster than doing a sqrt on distance
+			let collision_dist = (a.borrow().radius + a.borrow().radius).powi(2);
+
+			// checks for collison
+			if a.borrow().dist_sqrd(&b.borrow()) <= collision_dist {
+				// calculate new mass and velocity
+				let new_momentum = a.borrow().momentum() + b.borrow().momentum();
+				a.borrow_mut().mass += b.borrow().mass;
+				a.borrow_mut().radius();
+				let mass = a.borrow().mass;
+				a.borrow_mut().vel = new_momentum / mass;
+	
+				b.borrow_mut().collided = true;
+			} // else do nothing
+		}
 	}
 
 	/// multiplier to adjust size of particles
 	const SIZE_MULTIPLIER: f32 = 0.05;
 
-	/// returns how big the object should be on screen and for collision detection.
+	/// recalculates the radius
 	/// The radius is determined by finding the radius of a sphere with a volume of `mass`
 	pub fn radius(&mut self) {
 		// FRAC_1_PI is 1/pi, multiplying by that is faster than dividing by pi, and is accurate enough

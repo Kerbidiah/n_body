@@ -8,7 +8,6 @@ use crate::particle::Particle;
 
 /// execute the physics loop `steps_per` times.
 /// this allows you to have multiple physics frames per graphical frame
-// [T] means a "slice of type T". A slice is basically a more generic vector
 pub fn physics_loop(bodies: &mut Vec<RefCell<&mut Particle>>, steps_per: usize, time_scaling: f32) {
 	let dt = time::get_frame_time() / (steps_per as f32) * time_scaling;
 	
@@ -24,7 +23,6 @@ pub fn physics_loop(bodies: &mut Vec<RefCell<&mut Particle>>, steps_per: usize, 
 		// calc collisions
 		collisions(bodies);
 		
-		bodies.retain(|b| !b.borrow().collided);
 	}
 }
 
@@ -36,9 +34,10 @@ fn gravity(bodies: &[RefCell<&mut Particle>]) {
 }
 
 /// calculate collisions
-pub fn collisions(bodies: &[RefCell<&mut Particle>]) {
-	dbg!();
+pub fn collisions(bodies: &mut Vec<RefCell<&mut Particle>>) {
 	bodies.iter().combinations(2).for_each(|pair| {
 		Particle::check_collision(pair[0], pair[1]);
 	});
+
+	bodies.retain(|b| !b.borrow().collided);
 }
