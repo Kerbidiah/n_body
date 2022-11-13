@@ -23,71 +23,71 @@ pub const COUNT: usize = 1500;
 
 #[macroquad::main("n-body simulation")] // macroquad entry point, also title of window
 async fn main() {
-    // setup the camera
-    let mut cam = Camera2D::default();
-    cam.zoom *= 0.025;
-    set_camera(&cam); // the & means we are passing cam as a reference which means we keep ownership of cam
+	// setup the camera
+	let mut cam = Camera2D::default();
+	cam.zoom *= 0.025;
+	set_camera(&cam); // the & means we are passing cam as a reference which means we keep ownership of cam
 
-    // generate random particles
-    let rand_gen_settings = particle::BeltRandomGen {
-        center: None,
-        radius: MinMax::new(4.0, 10.0),
-        vel: MinMax::new(0.005, 0.1),
-        vel_angle: MinMax::new(-5.0, 5.0),
-        direction: particle::belt_random::Direction::CCW,
-        mass: MinMax::new(0.01, 0.07),
-    };
+	// generate random particles
+	let rand_gen_settings = particle::BeltRandomGen {
+		center: None,
+		radius: MinMax::new(4.0, 10.0),
+		vel: MinMax::new(0.005, 0.1),
+		vel_angle: MinMax::new(-5.0, 5.0),
+		direction: particle::belt_random::Direction::CCW,
+		mass: MinMax::new(0.01, 0.07),
+	};
 
-    let mut bodies = rand_gen_settings.gen_multi(COUNT);
-    bodies[0].pos = Vec2::ZERO;
-    bodies[0].vel = Vec2::ZERO;
-    bodies[0].mass = 50.0;
-    bodies[0].radius(); // recompute raidus since we changed mass
+	let mut bodies = rand_gen_settings.gen_multi(COUNT);
+	bodies[0].pos = Vec2::ZERO;
+	bodies[0].vel = Vec2::ZERO;
+	bodies[0].mass = 50.0;
+	bodies[0].radius(); // recompute raidus since we changed mass
 
-    // convert from vec<bodies> to vec<&mut RefCell<bodies>>
-    let mut bodies: Vec<RefCell<&mut particle::Particle>> = bodies
-        .par_iter_mut()
-        .map(|each| {
-            // each.vel *= 0.0;
-            RefCell::new(each)
-        })
-        .collect();
+	// convert from vec<bodies> to vec<&mut RefCell<bodies>>
+	let mut bodies: Vec<RefCell<&mut particle::Particle>> = bodies
+		.par_iter_mut()
+		.map(|each| {
+			// each.vel *= 0.0;
+			RefCell::new(each)
+		})
+		.collect();
 
-    // run collisions to get rid of all overlaping particles
-    physics::collisions(&mut bodies);
-    dbg!(bodies.len());
+	// run collisions to get rid of all overlaping particles
+	physics::collisions(&mut bodies);
+	dbg!(bodies.len());
 
-    // setup frame and time stuff
-    let mut frame_counter: u64 = 0;
-    loop {
-        // controls
-        controls::zoom(&mut cam);
+	// setup frame and time stuff
+	let mut frame_counter: u64 = 0;
+	loop {
+		// controls
+		controls::zoom(&mut cam);
 
-        physics::physics_loop(&mut bodies, SIMS_PER_FRAME, DT_MULTIPLIER);
+		physics::physics_loop(&mut bodies, SIMS_PER_FRAME, DT_MULTIPLIER);
 
-        // lock the "star" inplace
-        // bodies[0].borrow_mut().pos = Vec2::ZERO;
-        // bodies[0].borrow_mut().vel = Vec2::ZERO;
+		// lock the "star" inplace
+		// bodies[0].borrow_mut().pos = Vec2::ZERO;
+		// bodies[0].borrow_mut().vel = Vec2::ZERO;
 
-        // kill particles that have gone too far
-        let star = bodies[0].borrow().clone();
-        bodies.retain(|b| b.borrow().dist_sqrd(&star) <= 10_000.0);
+		// kill particles that have gone too far
+		let star = bodies[0].borrow().clone();
+		bodies.retain(|b| b.borrow().dist_sqrd(&star) <= 10_000.0);
 
-        bodies.iter().for_each(|b| {
-            b.borrow().draw(colors::WHITE);
-        });
+		bodies.iter().for_each(|b| {
+			b.borrow().draw(colors::WHITE);
+		});
 
-        // print debug info every 30 frames
-        if frame_counter % 30 == 0 {
-            dbg!(get_fps());
-            dbg!(bodies.len());
-        }
+		// print debug info every 30 frames
+		if frame_counter % 30 == 0 {
+			dbg!(get_fps());
+			dbg!(bodies.len());
+		}
 
-        frame_counter += 1;
+		frame_counter += 1;
 
-        // advance to the next frame after 1/60th of a second has elapsed since previous frame
-        // note: if you're screen has a higher refreshrate (like my laptop, 240Hz) it will instead
-        // be 1/refresh_rate seconds, so 1/240th of a second for my laptop
-        next_frame().await
-    }
+		// advance to the next frame after 1/60th of a second has elapsed since previous frame
+		// note: if you're screen has a higher refreshrate (like my laptop, 240Hz) it will instead
+		// be 1/refresh_rate seconds, so 1/240th of a second for my laptop
+		next_frame().await
+	}
 }
