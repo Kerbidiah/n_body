@@ -4,8 +4,13 @@ use std::cell::RefCell;
 use macroquad::math::Vec2; // import 2d vector from macroquad (note: macroquad is actually using glam)
 use macroquad::{shapes, color};
 
-pub mod random; // let rust know that particle/random.rs is related to this file
-pub use random::PlainRandomGen; // any use of particle.rs will automatically use particle/random.rs aswell
+pub mod plain_random; // let rust know that src/particle/random.rs is related to this file
+pub mod belt_random;
+mod random_particle_generator;
+mod tools; // this referse to src/particle/tools.rs not src/tools.rs
+
+pub use plain_random::PlainRandomGen; // any use of particle.rs will automatically use particle/random.rs aswell
+pub use belt_random::BeltRandomGen;
 
 
 

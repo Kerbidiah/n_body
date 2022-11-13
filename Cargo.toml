@@ -14,9 +14,13 @@ strip = true # strip unnesescary symbols and debug information from the binary
 lto = true # enable full link time optimization (removes unused functions and duplicated functions etc)
 
 [dependencies] # the packages I am using
-anyhow = "1.0.66"
-iter_tools = "0.1.4" # used for some advanced iterating stuff
+anyhow = "1.0.66" # awesome error handling
+iter_tools = "0.1.4" # used for some advanced iterator stuff
 macroquad = "0.3.25" # used for displaying stuff on screen
 rayon = "1.5.3" # used for easy parallel computing
 glam = {version = "0.21.3", features = ["rand"]} # used for vector math, enable the random feature
-rand = "0.8.5"
+rand = "0.8.5" # random number generator
+
+# used for serialization/deserialization
+serde = { version = "1.0.147", features = ["derive"] }
+ron = "0.8.0"
