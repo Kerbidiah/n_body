@@ -10,8 +10,6 @@ use super::tools::*;
 use super::Particle;
 use super::RandomParticleGen;
 
-// pub use Direction;
-
 /// structure to represent settings for randomly generating `Particle`s in a belt like region.
 /// The direction of their velocities is perpendicularly relative to their position
 /// such that all the particles are travelling the same direction around the belt.

@@ -1,4 +1,5 @@
 use macroquad::camera::Camera2D;
+use macroquad::window;
 use macroquad::input;
 use macroquad::prelude::set_camera;
 use macroquad::prelude::KeyCode;
@@ -19,4 +20,7 @@ pub fn zoom(cam: &mut Camera2D) {
 	set_camera(cam);
 }
 
-// const SENSITIVITY: f32 = 0.01;
+// correct for aspect ratio so circles look circular and stuff like that
+pub fn fix_aspect_ratio(cam: &mut Camera2D) {
+	cam.zoom.y = cam.zoom.x * (window::screen_width() / window::screen_height());
+}

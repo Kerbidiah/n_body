@@ -6,10 +6,10 @@ use rayon::prelude::*;
 
 use crate::particle::Particle;
 
-/// execute the physics loop `steps_per` times.
-/// this allows you to have multiple physics frames per graphical frame
+/// executes the physics loop `steps_per` times.
+/// This allows you to have multiple physics simulations per graphical frame
 pub fn physics_loop(bodies: &mut Vec<RefCell<&mut Particle>>, steps_per: usize, time_scaling: f32) {
-	let dt = time::get_frame_time() / (steps_per as f32) * time_scaling;
+	let dt = time::get_frame_time() / (steps_per as f32) * time_scaling; // time increment per simulation
 
 	for _ in 0..steps_per {
 		// calc gravity between each pair
@@ -24,7 +24,7 @@ pub fn physics_loop(bodies: &mut Vec<RefCell<&mut Particle>>, steps_per: usize, 
 }
 
 /// calculate gravity
-fn gravity(bodies: &[RefCell<&mut Particle>]) {
+pub fn gravity(bodies: &[RefCell<&mut Particle>]) {
 	bodies.iter().combinations(2).for_each(|pair| {
 		Particle::grav(pair[0], pair[1]);
 	});

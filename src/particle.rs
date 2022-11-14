@@ -1,23 +1,22 @@
 use std::cell::RefCell;
 use std::f32::consts::*;
 
-use macroquad::math::Vec2; // import 2d vector from macroquad (note: macroquad is actually using glam)
+use macroquad::math::Vec2; // Vec2 is a 2 dimenstional 32-bit float vector
 use macroquad::{color, shapes};
 
 pub mod belt_random;
-pub mod plain_random; // let rust know that src/particle/random.rs is related to this file
+pub mod plain_random;
 mod random_particle_gen;
 mod tools; // this refers to src/particle/tools.rs not src/tools.rs
 
-// any use of particle.rs will automatically use particle/random.rs aswell
+// any use of particle.rs will automatically use all of the following
 pub use belt_random::BeltRandomGen;
 pub use plain_random::PlainRandomGen;
 pub use random_particle_gen::RandomParticleGen;
 pub use tools::MinMax;
-// pub use belt_random::
 
 /// a structure to represent a particle
-#[derive(Debug, Clone)] // tell rust to write the code so we can print this structure for debugging purposes
+#[derive(Debug, Clone)]
 pub struct Particle {
 	pub pos: Vec2,
 	pub vel: Vec2,
@@ -31,12 +30,12 @@ pub struct Particle {
 	pub collided: bool,
 }
 
-impl Particle { // functions for particles
+impl Particle { // functions/methods for particles
 
 	/// gravitational constant
 	pub const G: f32 = 6.6743e-11;
 
-	/// creates a new `Particle` w/ given parameters and `colided = false`
+	/// creates a new `Particle` w/ given parameters and `colided = false` and no acceleration
 	pub fn new(pos: Vec2, vel: Vec2, mass: f32) -> Self {
 		let mut x = Self {
 			pos,
@@ -91,6 +90,7 @@ impl Particle { // functions for particles
 	}
 
 	/// apply gravitational acceleration to the given `Particles`
+	// RefCell allows the value contained within it to be mutable even if the RefCell itself is immutable
 	pub fn grav(a: &RefCell<&mut Self>, b: &RefCell<&mut Self>) {
 		let mag = Self::G / (a.borrow().dist_sqrd(&b.borrow()));
 		let dirc = a.borrow().diff(&b.borrow()).normalize();
@@ -127,8 +127,8 @@ impl Particle { // functions for particles
 	/// multiplier to adjust size of particles
 	const SIZE_MULTIPLIER: f32 = 0.5;
 
-	/// recalculates the radius
-	/// The radius is determined by finding the radius of a sphere with a volume of `mass`
+	// /// recalculates the radius
+	// /// The radius is determined by finding the radius of a sphere with a volume of `mass`
 	// pub fn radius(&mut self) {
 	// 	// FRAC_1_PI is 1/pi, multiplying by that is faster than dividing by pi, and is accurate enough
 	// 	self.radius = (0.75 * self.mass * FRAC_1_PI * Self::SIZE_MULTIPLIER).cbrt(); // cbrt is cube root
