@@ -14,19 +14,16 @@ pub mod particle;
 pub mod physics;
 pub mod config;
 pub mod game_loop;
-
+pub mod start_screen;
 
 #[macroquad::main("n-body simulation")] // macroquad entry point, also title of window
 async fn main() -> anyhow::Result<()> {
 	let settings_path = PathBuf::from("settings.ron");
-	let method_path = PathBuf::from("plzwork.ron");
+	let method_path = PathBuf::from("belt.ron");
 
-	// load settings
-	let s = config::Settings::load(settings_path)?;
+	let (s, rgs) = start_screen::start_screen(settings_path, method_path).await?;
 
-	// load random particle distribution method
-	let rand_gen_settings = config::DistributionMethod::load(method_path)?;
-	
+
 	// setup the camera
 	let mut cam = Camera2D::default();
 	cam.zoom *= 0.025;
@@ -34,7 +31,7 @@ async fn main() -> anyhow::Result<()> {
 	
 
 	// generate the particles
-	let mut bodies = rand_gen_settings.gen_multi(s.count);
+	let mut bodies = rgs.gen_multi(s.count);
 	bodies[0].pos = Vec2::ZERO; // move the first particle to the center
 	bodies[0].vel = Vec2::ZERO; // set vel to 0
 	bodies[0].mass = 50.0; // make it much heavier (kinda like a star)
