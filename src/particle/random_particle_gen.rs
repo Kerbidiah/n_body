@@ -1,14 +1,26 @@
+use std::path::PathBuf;
+use std::fs;
+
+use anyhow::{Result, Ok};
+
 use rand::rngs::ThreadRng;
 use rand::thread_rng;
+
+use ron::ser;
 
 use rayon::prelude::*;
 
 use super::Particle;
 
+use crate::config::{DistributionMethod, my_config};
+
 /// a trait to define what a random particle generator is
 pub trait RandomParticleGen: Sync {
 	/// generate a random particle with given settings
 	fn gen(&self, rng: &mut ThreadRng) -> Particle;
+
+	/// convert to `DistributionMethod`
+	fn get_enum(&self) -> DistributionMethod;
 
 	/// generate many `Particle`s with the given settings
 	/// this function is automatically written by rust for anything structure that implements this trait
@@ -23,5 +35,13 @@ pub trait RandomParticleGen: Sync {
 				self.gen(&mut rng)
 			})
 			.collect() // collect converts the iterator into a vector
+	}
+
+	/// deserializes a `RandomParticleGen` from the specified .ron file
+	fn write(&self, path: PathBuf) -> Result<()> {
+		let contents = ser::to_string_pretty(&self.get_enum(), my_config())?;
+		fs::write(path, contents)?;
+
+		Ok(())
 	}
 }

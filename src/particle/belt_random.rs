@@ -10,11 +10,13 @@ use super::tools::*;
 use super::Particle;
 use super::RandomParticleGen;
 
+use crate::config::DistributionMethod;
+
 /// structure to represent settings for randomly generating `Particle`s in a belt like region.
 /// The direction of their velocities is perpendicularly relative to their position
 /// such that all the particles are travelling the same direction around the belt.
 /// Its much like an asteriod belt.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct BeltRandomGen {
 	/// corrdinates of center of belt
 	// can't use Vec2 because it doesn't derive `Serialize` and `Deserialize`
@@ -31,7 +33,7 @@ pub struct BeltRandomGen {
 	pub mass: MinMax,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Direction {
 	/// clockwise
 	CW,
@@ -80,5 +82,9 @@ impl RandomParticleGen for BeltRandomGen {
 		let mass = self.mass.inc_rand(rng);
 
 		Particle::new(pos, vel, mass)
+	}
+
+	fn get_enum(&self) -> DistributionMethod {
+		DistributionMethod::Belt(self.clone())
 	}
 }

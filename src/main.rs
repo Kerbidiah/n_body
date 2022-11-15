@@ -1,4 +1,9 @@
+// #![windows_subsystem = "windows"] // make the terimnal not show up
+
 use std::cell::RefCell;
+use std::path::PathBuf;
+
+use anyhow::Result;
 
 use rayon::prelude::*;
 
@@ -11,6 +16,7 @@ use macroquad::prelude::*; // import everything in the macroquad prelude (stuff 
 pub mod controls;
 pub mod particle;
 pub mod physics;
+pub mod config;
 
 use particle::MinMax;
 use particle::RandomParticleGen;
@@ -23,21 +29,15 @@ pub const SIMS_PER_FRAME: usize = 4;
 pub const COUNT: usize = 1500;
 
 #[macroquad::main("n-body simulation")] // macroquad entry point, also title of window
-async fn main() {
+async fn main() -> Result<()> {
 	// setup the camera
 	let mut cam = Camera2D::default();
 	cam.zoom *= 0.025;
-	set_camera(&cam); // the & means we are passing cam as a reference which means we keep ownership of cam
-
-	// generate random particles
-	let rand_gen_settings = particle::BeltRandomGen {
-		center: None,
-		radius: MinMax::new(3.0, 20.0),
-		vel: MinMax::new(0.005, 0.1),
-		vel_angle: MinMax::new(-5.0, 5.0),
-		direction: particle::belt_random::Direction::CCW,
-		mass: MinMax::new(0.01, 0.07),
-	};
+	set_camera(&cam); // the & means we are passing cam as a reference, so we keep ownership of cam
+	
+	// load random particle distribution method
+	let fname = PathBuf::from("plzwork.ron");
+	let rand_gen_settings = config::load_distribution_method(fname)?;
 
 	// generate the particles
 	let mut bodies = rand_gen_settings.gen_multi(COUNT);
@@ -60,6 +60,7 @@ async fn main() {
 
 	// setup frame and time stuff
 	let mut frame_counter: u64 = 0;
+	let mut killed_by_dist: usize = 0;
 	loop {
 		// controls
 		controls::zoom(&mut cam);
@@ -67,13 +68,15 @@ async fn main() {
 
 		physics::physics_loop(&mut bodies, SIMS_PER_FRAME, DT_MULTIPLIER);
 		
-		// lock the "star" inplace
+		// lock the "star" in place
 		// bodies[0].borrow_mut().pos = Vec2::ZERO;
 		// bodies[0].borrow_mut().vel = Vec2::ZERO;
 		
 		// kill particles that have gone too far
+		let prev = bodies.len();
 		let star = bodies[0].borrow().clone();
 		bodies.retain(|b| b.borrow().dist_sqrd(&star) <= 10_000.0);
+		killed_by_dist += prev - bodies.len();
 		
 		bodies.iter().for_each(|b| {
 			b.borrow().draw(colors::WHITE);
@@ -82,8 +85,8 @@ async fn main() {
 		// print debug info every 30 frames
 		if frame_counter % 30 == 0 {
 			dbg!(get_fps());
-			// log::idk(get_fps() as u16);
 			dbg!(bodies.len());
+			dbg!(killed_by_dist);
 		}
 		
 		frame_counter += 1;

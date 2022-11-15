@@ -1,6 +1,9 @@
 rust standard documentation: https://doc.rust-lang.org/std/index.html
+rust book: https://doc.rust-lang.org/book/title-page.html
+rust by example: https://doc.rust-lang.org/rust-by-example/index.html
+no terminal window: https://users.rust-lang.org/t/running-rust-app-without-showing-the-terminal/41859
+conditional attribute: https://stackoverflow.com/questions/42551113/is-it-possible-to-conditionally-enable-an-attribute-like-derive
 rust backtrace: https://www.reddit.com/r/rust/comments/7h24y5/how_do_i_run_cargo_test_with_rust_backtrace1_on/
-rust book traits: https://doc.rust-lang.org/book/ch10-02-traits.html
 
 documentation for all packages: https://docs.rs
 

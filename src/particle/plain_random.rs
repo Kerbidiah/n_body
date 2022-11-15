@@ -6,8 +6,10 @@ use super::tools::*;
 use super::Particle; // super refers to the parent of this file which would be particle.rs
 use super::RandomParticleGen;
 
+use crate::config::DistributionMethod;
+
 /// structure to represent settings for randomly generating evently distibuted `Particle`s in a circular region.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PlainRandomGen {
 	/// max distance from origin
 	pub max_radius: f32,
@@ -36,5 +38,9 @@ impl RandomParticleGen for PlainRandomGen {
 		let mass = self.mass.inc_rand(rng);
 
 		Particle::new(pos, vel, mass) // btw no semicolon means value is returned
+	}
+
+	fn get_enum(&self) -> DistributionMethod {
+		DistributionMethod::Plain(self.clone())
 	}
 }
