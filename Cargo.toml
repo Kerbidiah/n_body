@@ -24,3 +24,4 @@ rand = "0.8.5" # random number generator
 # used for serialization/deserialization
 serde = { version = "1.0.147", features = ["derive"] }
 ron = "0.8.0"
+egui-macroquad = "0.12.0"

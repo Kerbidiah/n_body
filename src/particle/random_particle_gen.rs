@@ -25,7 +25,7 @@ pub trait RandomParticleGen: Sync {
 	/// generate many `Particle`s with the given settings
 	/// this function is automatically written by rust for anything structure that implements this trait
 	// usize could be either a u32 or u64, whichever bit archetecture the code is compiled for
-	fn gen_multi(&self, count: usize) -> Vec<Particle> {
+	fn gen_multi(&self, count: u16) -> Vec<Particle> {
 		(0..count) // range to iterate through
 			.par_bridge() // converts a normal iterator to a parrallel one
 			.map(|_| { // _ means ignore the numbers we are iterating through

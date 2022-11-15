@@ -1,0 +1,6 @@
+Settings(
+	dt_multiplier: 20.0,
+	sims_per_frame: 4,
+	count: 1500,
+	kill_dist: Some(100.0),
+)
