@@ -53,28 +53,32 @@ pub struct Settings {
 }
 
 impl Settings {
-	/// if there was an issue reading the settings file,
-	/// this const can be used as an alternative
-	pub const FALLBACK: Self = Settings {
-		dt_multiplier: 20.0,
-		sims_per_frame: 4,
-		count: 1500,
-		kill_dist: Some(100.0),
-	};
-
 	/// deserialize the given file into `Settings`
-	pub fn load(path: PathBuf) -> Result<Self> {
+	pub fn load(path: PathBuf) -> anyhow::Result<Self> {
 		// read a .ron file and deserialize the contents
 		let file_bytes = fs::read(path)?;
 		Ok(ron::de::from_bytes(&file_bytes)?)
 	}
 
 	/// serialize `self` to the given file
-	pub fn write(&self, path: PathBuf) -> Result<()> {
+	pub fn write(&self, path: PathBuf) -> anyhow::Result<()> {
 		let contents = ron::ser::to_string_pretty(self, my_config())?;
 		fs::write(path, contents)?;
 
 		Ok(())
+	}
+}
+
+impl Default for Settings {
+	/// if there was an issue reading the settings file,
+	/// this default can be used as an alternative
+	fn default() -> Self {
+		Self {
+			dt_multiplier: 20.0,
+			sims_per_frame: 4,
+			count: 1500,
+			kill_dist: Some(100.0),
+		}
 	}
 }
 
@@ -87,12 +91,7 @@ mod tests {
 	#[ignore]
 	#[test]
 	fn write_settings() {
-		let s = Settings {
-			dt_multiplier: 20.0,
-			sims_per_frame: 4,
-			count: 1500,
-			kill_dist: Some(100.0),
-		};
+		let s = Settings::default();
 
 		let fname = PathBuf::from("settings.ron");
 		s.write(fname).unwrap();

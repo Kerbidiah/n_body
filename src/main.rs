@@ -1,4 +1,4 @@
-// #![windows_subsystem = "windows"] // make the terimnal not show up
+#![windows_subsystem = "windows"] // make the terimnal not show up
 
 use std::path::PathBuf;
 

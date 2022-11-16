@@ -45,8 +45,13 @@ impl Link {
 	}
 }
 
-pub fn author(ui: &mut Ui) {
-	ui.label("By: Alex Janninck");
-	ui.hyperlink_to("email: ajanninc@purdue.edu", "mailto:ajanninc@purdue.edu");
+pub fn info(ui: &mut Ui) {
+	ui.horizontal(|ui| {
+		ui.label("By: Alex Janninck");
+		ui.hyperlink_to("(ajanninc@purdue.edu)", "mailto:ajanninc@purdue.edu");
+	});
+
+	// env! is a macro that gets the version from cargo.toml
+	ui.weak(format!("version: {}", env!("CARGO_PKG_VERSION")));
 	ui.separator();
 }
