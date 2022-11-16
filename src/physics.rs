@@ -8,7 +8,7 @@ use crate::particle::Particle;
 
 /// executes the physics loop `steps_per` times.
 /// This allows you to have multiple physics simulations per graphical frame
-pub fn physics_loop(bodies: &mut Vec<RefCell<&mut Particle>>, steps_per: usize, time_scaling: f32) {
+pub fn physics_loop(bodies: &mut Vec<RefCell<&mut Particle>>, steps_per: u16, time_scaling: f32) {
 	let dt = time::get_frame_time() / (steps_per as f32) * time_scaling; // time increment per simulation
 
 	for _ in 0..steps_per {

@@ -20,7 +20,7 @@ use crate::config::DistributionMethod;
 pub struct BeltRandomGen {
 	/// corrdinates of center of belt
 	// can't use Vec2 because it doesn't derive `Serialize` and `Deserialize`
-	pub center: Option<[f32; 2]>,
+	pub center: [f32; 2],
 	/// distance from center
 	pub radius: MinMax,
 	/// speed
@@ -43,14 +43,14 @@ pub enum Direction {
 
 impl BeltRandomGen {
 	pub fn new(
-		offset: Option<Vec2>,
+		offset: Vec2,
 		radius: MinMax,
 		vel: MinMax,
 		mass: MinMax,
 		vel_angle: MinMax,
 	) -> Self {
 		Self {
-			center: offset.map(|x| x.to_array()),
+			center: offset.to_array(),
 			radius,
 			vel,
 			vel_angle,
@@ -61,7 +61,7 @@ impl BeltRandomGen {
 
 	/// returns the center offset as a `Vec2`
 	fn offset(&self) -> Vec2 {
-		self.center.map_or(Vec2::ZERO, |c| Vec2::from_slice(&c))
+		Vec2::from_slice(&self.center)
 	}
 }
 
@@ -83,7 +83,7 @@ impl RandomParticleGen for BeltRandomGen {
 		};
 
 		// use angle to make velocity vector
-		let vel = random_vec(rng, self.vel, self.vel_angle.radians().plus(theta));
+		let vel = random_vec(rng, self.vel, self.vel_angle.radians()) + theta;
 
 		let mass = self.mass.inc_rand(rng);
 
@@ -98,7 +98,7 @@ impl RandomParticleGen for BeltRandomGen {
 impl Default for BeltRandomGen {
 	fn default() -> Self {
 		Self {
-			center: None,
+			center: [0.0, 0.0],
 			radius: MinMax::new(3.0, 20.0),
 			vel: MinMax::new(0.005, 0.1),
 			vel_angle: MinMax::new(-5.0, 5.0),

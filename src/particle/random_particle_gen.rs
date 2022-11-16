@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use std::fs;
 
-use anyhow::{Result, Ok};
+use anyhow::Ok;
 
 use rand::rngs::ThreadRng;
 use rand::thread_rng;
@@ -38,7 +38,7 @@ pub trait RandomParticleGen: Sync {
 	}
 
 	/// deserializes a `RandomParticleGen` from the specified .ron file
-	fn write(&self, path: PathBuf) -> Result<()> {
+	fn write(&self, path: PathBuf) -> anyhow::Result<()> {
 		let contents = ser::to_string_pretty(&self.get_enum(), my_config())?;
 		fs::write(path, contents)?;
 

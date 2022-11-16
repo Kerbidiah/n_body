@@ -2,8 +2,6 @@
 
 use std::path::PathBuf;
 
-use anyhow;
-
 use macroquad::camera::Camera2D;
 use macroquad::math::Vec2;
 use macroquad::prelude::*; // import everything in the macroquad prelude (stuff that is frequently used)

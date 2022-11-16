@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use std::fs;
 
-use anyhow::{Result, Ok};
+use anyhow::Ok;
 
 use serde::{Deserialize, Serialize};
 use ron;
@@ -9,37 +9,71 @@ use ron::ser::PrettyConfig;
 
 use crate::particle::{RandomParticleGen, PlainRandomGen, BeltRandomGen};
 
-
+/// an enum to represent all the different types of random particle generation we have
 #[derive(Debug, Serialize, Deserialize)]
 pub enum DistributionMethod {
 	Plain(PlainRandomGen),
 	Belt(BeltRandomGen),
 }
 
+/// same as `DistributionMethod`, but empty (to be used in the UI)
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
+pub enum DistributionMethodEmpty {
+	Plain,
+	#[default]
+	Belt,
+}
+
+
 /// return a custom serilization configuration
 pub fn my_config() -> PrettyConfig {
 	PrettyConfig::new()
-		.struct_names(true)
-		.indentor("\t".to_owned())
-		.new_line("\n".to_owned())
+	.struct_names(true)
+	.indentor("\t".to_owned())
+	.new_line("\n".to_owned())
 }
 
+use DistributionMethod as DM;
 impl DistributionMethod {
 	/// deserializes a `RandomParticleGen` from the specified .ron file.
+	pub fn load_remove_enum(path: PathBuf) -> anyhow::Result<Box<dyn RandomParticleGen>> {
+		let contents = Self::load(path)?;
+		
+		Ok(contents.strip_enum())
+	}
+	
+	pub fn load(path: PathBuf) -> anyhow::Result<Self> {
+		// read a .ron file and deserialize the contents to a `DistributionMethod` enum
+		let file_bytes = fs::read(path)?;
+		let contents: Self = ron::de::from_bytes(&file_bytes)?;
+		
+		Ok(contents)
+	}
+		
+	/// return the structure implementing `RandomParticleGen` inside of the enum
 	// dyn means the type is a type that is determined at compile time.
 	// the `RandomParticleGen` trait limits the possible types/structs
 	// to those that impl `RandomParticleGen`
-	pub fn load(path: PathBuf) -> Result<Box<dyn RandomParticleGen>> {
-		// read a .ron file and deserialize the contents to a `DistributionMethod` enum
-		let file_bytes = fs::read(path)?;
-		let contents: DistributionMethod = ron::de::from_bytes(&file_bytes)?;
-	
-		let method: Box<dyn RandomParticleGen> = match contents {
-			DistributionMethod::Plain(x) => Box::new(x),
-			DistributionMethod::Belt(x) => Box::new(x),
+	pub fn strip_enum(&self) -> Box<dyn RandomParticleGen> {
+		let method: Box<dyn RandomParticleGen> = match self {
+			Self::Plain(x) => Box::new(x.clone()),
+			Self::Belt(x) => Box::new(x.clone()),
 		};
+		
+		method
+	}
 	
-		Ok(method)
+	/// get the corresponding `DistributionMethodEmpty`
+	pub fn corresponding(&self) -> DistributionMethodEmpty {
+		match self {
+			Self::Plain(_) => DME::Plain,
+			Self::Belt(_) => DME::Belt,
+		}
+	}
+	
+	/// checks if `self` corresponds to `other`
+	pub fn is_same(&self, other: DistributionMethodEmpty) -> bool {
+		self.corresponding() == other
 	}
 }
 
@@ -49,12 +83,23 @@ impl Default for DistributionMethod {
 	}
 }
 
+use DistributionMethodEmpty as DME;
+impl DistributionMethodEmpty {
+	/// get the corresponding `DistributionMethodEmpty`
+	pub fn corresponding_default(&self) -> DistributionMethod {
+		match self {
+			DME::Plain => DM::Plain(PlainRandomGen::default()),
+			DME::Belt => DM::Belt(BeltRandomGen::default()),
+		}
+	}
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Settings {
 	/// how many times faster simulation time is than real time
 	pub dt_multiplier: f32,
 	/// how many physics loops are run per frame displayed
-	pub sims_per_frame: usize,
+	pub sims_per_frame: u16,
 	/// how many particles are generated
 	pub count: u16,
 	/// how far can particles go before they are deleted
@@ -68,12 +113,12 @@ impl Settings {
 		let file_bytes = fs::read(path)?;
 		Ok(ron::de::from_bytes(&file_bytes)?)
 	}
-
+	
 	/// serialize `self` to the given file
 	pub fn write(&self, path: PathBuf) -> anyhow::Result<()> {
 		let contents = ron::ser::to_string_pretty(self, my_config())?;
 		fs::write(path, contents)?;
-
+		
 		Ok(())
 	}
 }
@@ -92,20 +137,29 @@ impl Default for Settings {
 }
 
 
+/// shorthand stuff
+pub mod prelude {
+	pub use super::Settings;
+	pub use super::DistributionMethod;
+	pub use super::DistributionMethodEmpty;
+	pub use DistributionMethod as DM;
+	pub use DistributionMethodEmpty as DME;
+}
+
 #[cfg(test)]
 mod tests {
 	use std::path::PathBuf;
 	use super::*;
-
+	
 	#[ignore]
 	#[test]
 	fn write_settings() {
 		let s = Settings::default();
-
+		
 		let fname = PathBuf::from("settings.ron");
 		s.write(fname).unwrap();
 	}
-
+	
 	#[test]
 	#[allow(unused_must_use)]
 	fn test_load_settings() {

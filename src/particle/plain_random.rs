@@ -1,6 +1,11 @@
+use std::f32::MAX;
 use serde::{Deserialize, Serialize};
 
 use rand::rngs::ThreadRng;
+
+use egui_macroquad;
+use egui_macroquad::egui;
+use egui_macroquad::egui::{widgets, Ui};
 
 use super::tools::*;
 use super::Particle; // super refers to the parent of this file which would be particle.rs
@@ -28,6 +33,29 @@ impl PlainRandomGen {
 			mass: MinMax::new(min_mass, max_mass),
 		}
 	}
+	
+	pub fn draw_editor(&mut self, ui: &mut Ui) {
+		egui::Grid::new("plain config grid")
+			.num_columns(2)
+			.striped(true)
+			.show(ui, |ui| {
+				ui.label("max radius");
+				ui.add(
+					widgets::DragValue::new(&mut self.max_radius)
+						.clamp_range(0.0..=MAX)
+				);
+				ui.end_row();
+				
+				ui.label("max velocity");
+				ui.add(
+					widgets::DragValue::new(&mut self.max_vel)
+						.clamp_range(0.0..=MAX)
+				);
+				ui.end_row();
+				
+				// TODO: add other feilds
+			});
+	}
 }
 
 impl RandomParticleGen for PlainRandomGen {
@@ -45,6 +73,7 @@ impl RandomParticleGen for PlainRandomGen {
 	}
 }
 
+#[allow(clippy::derivable_impls)]
 impl Default for PlainRandomGen {
 	fn default() -> Self {
 		Self {

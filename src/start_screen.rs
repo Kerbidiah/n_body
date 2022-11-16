@@ -8,10 +8,13 @@ use egui::{Align2, Vec2}; // this Vec2 is an egui_macroquad::egui::Vec2 not a ma
 
 use macroquad::prelude::*;
 
-use crate::config::{Settings, DistributionMethod};
+use crate::config::prelude::*;
 use crate::particle::RandomParticleGen;
 
-mod credits;
+pub mod credits;
+pub mod param_edit;
+
+use param_edit::Persistance;
 
 /// display the splash screen then display the configuration screen
 pub async fn start_screen(
@@ -67,14 +70,10 @@ async fn config_screen(
 	let mut settings = Settings::load(settings_path).unwrap_or_default();
 
 	// load random particle distribution method
-	let mut temp_rgs = DistributionMethod::load(method_path);
-
-	if temp_rgs.is_err() {// todo: remove
-		panic!("TODO: FIX THIS");
-	}
+	let mut rgs = DistributionMethod::load(method_path).unwrap_or_default();
+	let mut p = Persistance::new(&rgs, &settings);
 
 	let mut stay = true;
-	
 	while stay {
 		clear_background(BLACK);
 
@@ -84,21 +83,33 @@ async fn config_screen(
 				.collapsible(false)
 				.resizable(false)
 				.show(egui_ctx, |ui| {
+					p.param_edit(
+						ui,
+						&mut settings,
+						&mut rgs
+					);
 
-					// button to continue
+					// button to continue to simulation
 					ui.vertical_centered(|ui| {
-						if ui.button("continue").clicked() {
+						ui.separator();
+						if ui.button("simulate").clicked() {
 							stay = false;
+
+							// insert a loading spinner thing so the user knows the app is working and not stuck
 							ui.spinner();
 						}
 					});
 				});
 		});
 
+		// if random generation method was changed, reset RGS to default
+		if !rgs.is_same(p.method) {
+			rgs = p.method.corresponding_default();
+		}
+
 		egui_macroquad::draw();
 		next_frame().await;
 	}
-	let rgs = temp_rgs.unwrap();
 
-	(settings, rgs)
+	(settings, rgs.strip_enum())
 }

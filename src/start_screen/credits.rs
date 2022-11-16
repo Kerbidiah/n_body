@@ -11,14 +11,19 @@ pub struct Link {
 }
 
 impl Link {
+	const SPLIT_STRING: &str = ": ";
 	/// make a `Link` from a `&str` of the format "name: link"
 	pub fn make(s: &'static str) -> Option<Self> {
-		if s.contains(": ") {
-			let (name, link) = s.split_once(": ").unwrap();
+		if s.contains(Self::SPLIT_STRING) {
+			// unsafe block allows us to use unwrap_unchecked
+			let (name, link) = unsafe {
+				// this will always be safe because we checked that it has the split point
+				s.split_once(Self::SPLIT_STRING).unwrap_unchecked()
+			};
 	
 			Some(Link {
-				name: name,
-				link: link,
+				name,
+				link,
 			})
 		} else {
 			None
@@ -29,7 +34,7 @@ impl Link {
 		ui.hyperlink_to(self.name, self.link);
 	}
 
-	pub fn disp_vec(links: &Vec<Self>, ui: &mut Ui) {
+	pub fn disp_vec(links: &[Self], ui: &mut Ui) {
 		ui.heading("Refrences:");
 		links.iter().for_each(|l| l.disp(ui));
 		ui.separator();
@@ -37,7 +42,7 @@ impl Link {
 
 	pub fn source_list() -> Vec<Self> {
 		// include_str! is a macro that basically copies the given file and pastes it in the code at compile time
-		let sources = include_str!("../../references.txt").split("\n");
+		let sources = include_str!("../../references.txt").split('\n');
 		let mut links = sources.map(Self::make).collect_vec();
 		links.retain(|l| l.is_some());
 
