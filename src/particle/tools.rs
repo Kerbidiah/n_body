@@ -111,3 +111,12 @@ impl MinMax {
 		}
 	}
 }
+
+impl Default for MinMax {
+    fn default() -> Self {
+        Self {
+			min: 0.0,
+			max: 1.0
+		}
+    }
+}

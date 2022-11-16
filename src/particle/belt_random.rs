@@ -65,6 +65,12 @@ impl BeltRandomGen {
 	}
 }
 
+impl Default for Direction {
+    fn default() -> Self {
+		Self::CCW
+    }
+}
+
 impl RandomParticleGen for BeltRandomGen {
 	fn gen(&self, rng: &mut ThreadRng) -> Particle {
 		let pos = random_vec_full_circle(rng, self.radius) + self.offset();
@@ -87,4 +93,17 @@ impl RandomParticleGen for BeltRandomGen {
 	fn get_enum(&self) -> DistributionMethod {
 		DistributionMethod::Belt(self.clone())
 	}
+}
+
+impl Default for BeltRandomGen {
+    fn default() -> Self {
+        Self {
+			center: Default::default(),
+			radius: Default::default(),
+			vel: Default::default(),
+			vel_angle: Default::default(),
+			direction: Default::default(),
+			mass: Default::default()
+		}
+    }
 }

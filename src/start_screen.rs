@@ -40,7 +40,9 @@ pub async fn splash_screen() {
 					Link::disp_vec(&links, ui); // display all the sources I used
 					// TODO: display the libraries I used????
 					credits::info(ui); // author and version section
-					ui.vertical_centered(|ui| { // button to continue
+
+					// button to continue
+					ui.vertical_centered(|ui| {
 						if ui.button("continue").clicked() {
 							stay = false;
 						}
@@ -71,15 +73,32 @@ async fn config_screen(
 		panic!("TODO: FIX THIS");
 	}
 
-	// let mut stay = true;
+	let mut stay = true;
 	
-	// while stay {
-	// 	clear_background(BLACK);
+	while stay {
+		clear_background(BLACK);
 
+		egui_macroquad::ui(|egui_ctx| {
+			egui::Window::new("Settings and configuration")
+				.anchor(Align2::CENTER_CENTER, Vec2::ZERO)
+				.collapsible(false)
+				.resizable(false)
+				.show(egui_ctx, |ui| {
 
-	// 	next_frame().await
-	// }
-	// let rgs = temp_rgs.unwrap();
+					// button to continue
+					ui.vertical_centered(|ui| {
+						if ui.button("continue").clicked() {
+							stay = false;
+							ui.spinner();
+						}
+					});
+				});
+		});
+
+		egui_macroquad::draw();
+		next_frame().await;
+	}
+	let rgs = temp_rgs.unwrap();
 
 	(settings, rgs)
 }

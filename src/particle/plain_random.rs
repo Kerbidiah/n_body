@@ -44,3 +44,13 @@ impl RandomParticleGen for PlainRandomGen {
 		DistributionMethod::Plain(self.clone())
 	}
 }
+
+impl Default for PlainRandomGen {
+    fn default() -> Self {
+        Self {
+			max_radius: Default::default(),
+			max_vel: Default::default(),
+			mass: Default::default()
+		}
+    }
+}
