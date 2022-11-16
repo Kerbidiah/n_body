@@ -98,12 +98,12 @@ impl RandomParticleGen for BeltRandomGen {
 impl Default for BeltRandomGen {
     fn default() -> Self {
         Self {
-			center: Default::default(),
-			radius: Default::default(),
-			vel: Default::default(),
-			vel_angle: Default::default(),
+			center: None,
+			radius: MinMax::new(3.0, 20.0),
+			vel: MinMax::new(0.005, 0.1),
+			vel_angle: MinMax::new(-5.0, 5.0),
 			direction: Default::default(),
-			mass: Default::default()
+			mass: MinMax::new(0.01, 0.07)
 		}
     }
 }
