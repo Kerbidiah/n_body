@@ -66,9 +66,9 @@ impl BeltRandomGen {
 }
 
 impl Default for Direction {
-    fn default() -> Self {
+	fn default() -> Self {
 		Self::CCW
-    }
+	}
 }
 
 impl RandomParticleGen for BeltRandomGen {
@@ -96,8 +96,8 @@ impl RandomParticleGen for BeltRandomGen {
 }
 
 impl Default for BeltRandomGen {
-    fn default() -> Self {
-        Self {
+	fn default() -> Self {
+		Self {
 			center: None,
 			radius: MinMax::new(3.0, 20.0),
 			vel: MinMax::new(0.005, 0.1),
@@ -105,5 +105,5 @@ impl Default for BeltRandomGen {
 			direction: Default::default(),
 			mass: MinMax::new(0.01, 0.07)
 		}
-    }
+	}
 }

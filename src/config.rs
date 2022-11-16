@@ -25,7 +25,10 @@ pub fn my_config() -> PrettyConfig {
 }
 
 impl DistributionMethod {
-	/// deserializes a `RandomParticleGen` from the specified .ron file
+	/// deserializes a `RandomParticleGen` from the specified .ron file.
+	// dyn means the type is a type that is determined at compile time.
+	// the `RandomParticleGen` trait limits the possible types/structs
+	// to those that impl `RandomParticleGen`
 	pub fn load(path: PathBuf) -> Result<Box<dyn RandomParticleGen>> {
 		// read a .ron file and deserialize the contents to a `DistributionMethod` enum
 		let file_bytes = fs::read(path)?;
@@ -37,6 +40,12 @@ impl DistributionMethod {
 		};
 	
 		Ok(method)
+	}
+}
+
+impl Default for DistributionMethod {
+	fn default() -> Self {
+		Self::Belt(BeltRandomGen::default())
 	}
 }
 

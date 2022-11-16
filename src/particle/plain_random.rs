@@ -46,11 +46,11 @@ impl RandomParticleGen for PlainRandomGen {
 }
 
 impl Default for PlainRandomGen {
-    fn default() -> Self {
-        Self {
+	fn default() -> Self {
+		Self {
 			max_radius: Default::default(),
 			max_vel: Default::default(),
 			mass: Default::default()
 		}
-    }
+	}
 }
