@@ -1,5 +1,5 @@
 Belt(BeltRandomGen(
-	center: None,
+	center: (0.0, 0.0),
 	radius: MinMax(
 		min: 3.0,
 		max: 20.0,

@@ -95,6 +95,21 @@ impl MinMax {
 		rng.gen_range(self.range_inc())
 	}
 
+	/// return `self` with x added to both min and max
+	pub fn plus(&self, x: f32) -> Self {
+		Self {
+			min: self.min + x,
+			max: self.max + x,
+		}
+	}
+	/// return `self` with x subtracted from both min and max
+	pub fn minus(&self, x: f32) -> Self {
+		Self {
+			min: self.min - x,
+			max: self.max - x,
+		}
+	}
+
 }
 
 impl Default for MinMax {

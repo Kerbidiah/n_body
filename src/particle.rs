@@ -135,10 +135,10 @@ impl Particle { // functions/methods for particles
 	// }
 
 	/// recalculates the radius
-	/// The radius is determined by finding the radius of a circle with a volume of `mass`
+	/// The radius is determined by finding the radius of a circle with an area of `mass`
 	pub fn radius(&mut self) {
-		// FRAC_1_PI is 1/pi, multiplying by that is faster than dividing by pi, and is accurate enough
-		self.radius = (self.mass * FRAC_1_PI * Self::SIZE_MULTIPLIER).sqrt(); // cbrt is cube root
+		// FRAC_1_PI is 1/pi, multiplying by that is faster than dividing by pi, and it's accurate enough
+		self.radius = (self.mass * FRAC_1_PI * Self::SIZE_MULTIPLIER).sqrt();
 	}
 
 	/// draws particle as an empty circle on screen with given color relative to center of the screen.

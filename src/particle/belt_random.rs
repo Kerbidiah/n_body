@@ -83,8 +83,8 @@ impl RandomParticleGen for BeltRandomGen {
 		};
 
 		// use angle to make velocity vector
-		let vel = random_vec(rng, self.vel, self.vel_angle.radians()) + theta;
-
+		let vel = random_vec(rng, self.vel, self.vel_angle.radians().plus(theta));
+		
 		let mass = self.mass.inc_rand(rng);
 
 		Particle::new(pos, vel, mass)

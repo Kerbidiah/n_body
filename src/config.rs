@@ -10,7 +10,7 @@ use ron::ser::PrettyConfig;
 use crate::particle::{RandomParticleGen, PlainRandomGen, BeltRandomGen};
 
 /// an enum to represent all the different types of random particle generation we have
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum DistributionMethod {
 	Plain(PlainRandomGen),
 	Belt(BeltRandomGen),
@@ -75,6 +75,15 @@ impl DistributionMethod {
 	pub fn is_same(&self, other: DistributionMethodEmpty) -> bool {
 		self.corresponding() == other
 	}
+
+	#[cfg(test)]
+	/// serialize `self` to the given file
+	pub fn write(&self, path: PathBuf) -> anyhow::Result<()> {
+		let contents = ron::ser::to_string_pretty(self, my_config())?;
+		fs::write(path, contents)?;
+		
+		Ok(())
+	}
 }
 
 impl Default for DistributionMethod {
@@ -129,7 +138,7 @@ impl Default for Settings {
 	fn default() -> Self {
 		Self {
 			dt_multiplier: 20.0,
-			sims_per_frame: 4,
+			sims_per_frame: 1,
 			count: 1500,
 			kill_dist: Some(100.0),
 		}
@@ -150,6 +159,7 @@ pub mod prelude {
 mod tests {
 	use std::path::PathBuf;
 	use super::*;
+	use crate::particle;
 	
 	#[ignore]
 	#[test]
@@ -159,7 +169,24 @@ mod tests {
 		let fname = PathBuf::from("settings.ron");
 		s.write(fname).unwrap();
 	}
+
 	
+	#[test]
+	fn write_belt() {
+		let rgs = DM::Belt(particle::BeltRandomGen::default());
+		
+		let fname = PathBuf::from("belt.ron");
+		rgs.write(fname).unwrap();
+	}
+	
+	#[test]
+	fn write_plain() {
+		let rgs = DM::Plain(particle::PlainRandomGen::default());
+		
+		let fname = PathBuf::from("plain.ron");
+		rgs.write(fname).unwrap();
+	}
+
 	#[test]
 	#[allow(unused_must_use)]
 	fn test_load_settings() {

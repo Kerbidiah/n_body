@@ -1,15 +1,15 @@
 use std::path::PathBuf;
 
-use anyhow::{self, Result, Ok};
-
 use egui_macroquad;
 use egui_macroquad::egui;
 use egui::{Align2, Vec2}; // this Vec2 is an egui_macroquad::egui::Vec2 not a macroquad::math::Vec2
 
 use macroquad::prelude::*;
+use macroquad::camera::Camera2D;
 
 use crate::config::prelude::*;
 use crate::particle::RandomParticleGen;
+use crate::controls;
 
 pub mod credits;
 pub mod param_edit;
@@ -20,10 +20,13 @@ use param_edit::Persistance;
 pub async fn start_screen(
 	settings_path: PathBuf,
 	method_path: PathBuf
-) -> Result<(Settings, Box<dyn RandomParticleGen>)> {
+) -> (Settings, Box<dyn RandomParticleGen>) {
 	splash_screen().await;
 	
-	Ok(config_screen(settings_path, method_path).await)
+	let mut cam = Camera2D::default();
+	controls::fix_aspect_ratio(&mut cam); // do this now so the initial display later on is correct from frame 1
+	
+	config_screen(settings_path, method_path).await
 }
 
 pub async fn splash_screen() {
@@ -58,9 +61,9 @@ pub async fn splash_screen() {
 	}
 }
 
-/// display configuration screen
-/// allows the user to select their random particle distribution method
-/// and modify their settings
+/// display configuration screen.
+/// Allows the user to select their random particle distribution method
+/// and modify their settings.
 async fn config_screen(
 	settings_path: PathBuf,
 	method_path: PathBuf
@@ -70,46 +73,28 @@ async fn config_screen(
 	let mut settings = Settings::load(settings_path).unwrap_or_default();
 
 	// load random particle distribution method
-	let mut rgs = DistributionMethod::load(method_path).unwrap_or_default();
-	let mut p = Persistance::new(&rgs, &settings);
+	let mut p = Persistance::new(method_path, &settings);
 
 	let mut stay = true;
 	while stay {
 		clear_background(BLACK);
-
+		
 		egui_macroquad::ui(|egui_ctx| {
 			egui::Window::new("Settings and configuration")
 				.anchor(Align2::CENTER_CENTER, Vec2::ZERO)
 				.collapsible(false)
 				.resizable(false)
+				// .title_bar(false)
 				.show(egui_ctx, |ui| {
-					p.param_edit(
-						ui,
-						&mut settings,
-						&mut rgs
-					);
-
-					// button to continue to simulation
-					ui.vertical_centered(|ui| {
-						ui.separator();
-						if ui.button("simulate").clicked() {
-							stay = false;
-
-							// insert a loading spinner thing so the user knows the app is working and not stuck
-							ui.spinner();
-						}
-					});
+					p.param_edit(ui, &mut settings);
+					p.rand_edit(ui);
+					p.simulate_button(ui, &mut stay);
 				});
 		});
-
-		// if random generation method was changed, reset RGS to default
-		if !rgs.is_same(p.method) {
-			rgs = p.method.corresponding_default();
-		}
 
 		egui_macroquad::draw();
 		next_frame().await;
 	}
 
-	(settings, rgs.strip_enum())
+	(settings, p.rgs.unwrap().strip_enum())
 }

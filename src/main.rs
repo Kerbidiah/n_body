@@ -1,4 +1,4 @@
-#![windows_subsystem = "windows"] // make the terimnal not show up
+// #![windows_subsystem = "windows"] // make the terimnal not show up
 
 use std::path::PathBuf;
 
@@ -19,14 +19,12 @@ async fn main() -> anyhow::Result<()> {
 	let settings_path = PathBuf::from("settings.ron");
 	let method_path = PathBuf::from("belt.ron");
 
-	let (s, rgs) = start_screen::start_screen(settings_path, method_path).await?;
-
+	let (s, rgs) = start_screen::start_screen(settings_path, method_path).await;
 
 	// setup the camera
 	let mut cam = Camera2D::default();
 	cam.zoom *= 0.025;
 	set_camera(&cam); // the & means we are passing cam as a reference, so we keep ownership of cam
-	
 
 	// generate the particles
 	let mut bodies = rgs.gen_multi(s.count);

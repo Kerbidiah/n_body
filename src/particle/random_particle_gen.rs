@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, fmt::Debug};
 use std::fs;
 
 use anyhow::Ok;
@@ -15,7 +15,7 @@ use super::Particle;
 use crate::config::{DistributionMethod, my_config};
 
 /// a trait to define what a random particle generator is
-pub trait RandomParticleGen: Sync {
+pub trait RandomParticleGen: Sync + Debug {
 	/// generate a random particle with given settings
 	fn gen(&self, rng: &mut ThreadRng) -> Particle;
 
