@@ -1,5 +1,6 @@
 use iter_tools::Itertools;
-use egui_macroquad::egui::Ui;
+use egui_macroquad::egui;
+use egui::{widgets, Ui};
 
 #[derive(Debug, Clone)]
 pub struct Link {
@@ -35,7 +36,11 @@ impl Link {
 	}
 
 	pub fn disp_vec(links: &[Self], ui: &mut Ui) {
-		ui.heading("Refrences:");
+		ui.horizontal(|ui| {
+			ui.heading("Refrences:");
+			ui.add_space(120.0);
+			widgets::global_dark_light_mode_buttons(ui);
+		});
 		links.iter().for_each(|l| l.disp(ui));
 		ui.separator();
 	}
@@ -56,7 +61,7 @@ pub fn info(ui: &mut Ui) {
 		ui.hyperlink_to("(ajanninc@purdue.edu)", "mailto:ajanninc@purdue.edu");
 	});
 
-	// env! is a macro that gets the version from cargo.toml
+	// env! is a macro that gets an enviornment variable at complile time
 	ui.weak(format!("version: {}", env!("CARGO_PKG_VERSION")));
 	ui.separator();
 }

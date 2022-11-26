@@ -5,6 +5,7 @@ no terminal window: https://users.rust-lang.org/t/running-rust-app-without-showi
 conditional attribute: https://stackoverflow.com/questions/42551113/is-it-possible-to-conditionally-enable-an-attribute-like-derive
 rust backtrace: https://www.reddit.com/r/rust/comments/7h24y5/how_do_i_run_cargo_test_with_rust_backtrace1_on/
 cargo version macro: https://stackoverflow.com/questions/27840394/how-can-a-rust-program-access-metadata-from-its-cargo-package
+conversion between types of strings: https://profpatsch.de/notes/rust-string-conversions
 
 documentation for all packages: https://docs.rs
 

@@ -13,34 +13,39 @@ use egui_macroquad::egui::{widgets, Ui};
 use crate::config::prelude::*;
 
 #[derive(Debug, Clone)]
+/// stores the state of the UI and options and stuff so it can persist between frames
 pub struct Persistance {
-	kill_dist_enabled: bool,
 	kill_dist: f32,
+	kill_dist_enabled: bool,
 	/// this is the current rand distribution settings
 	pub rgs: Option<DM>,
 	/// path to rand distribution settings
 	path: PathBuf,
+	/// cache of the file specified in `self.path`
+	/// this exists so we can show the file's contents in the UI w/o
+	/// having to load it from disk every single frame
+	rgs_cache: String,
 	/// how many frames untill files are refreshed
 	file_refresh_timer: u16,
+	/// list of all `.ron` files that aren't `settings.ron`
 	files: Vec<PathBuf>,
 }
 
 impl Persistance {
-	/// maximum kill distance range
-	#[inline] // this is a recomendation to the compiler to inline this function
+	/// maximum value for kill distance
 	fn max_kill_dist() -> f32 {
 		MAX.sqrt()
 	}
 
 	/// create a new persistance struct with a bunch of default values.
-	/// `init_path` is the initial path to the `DistributionMethod`	
+	/// `init_path` is the initial path to the `DistributionMethod`	(aka `DM`)
 	pub fn new(init_path: PathBuf, s: &Settings) -> Self {
-		let rgs = DistributionMethod::load(init_path.clone()).ok();
 		Self {
-			kill_dist_enabled: s.kill_dist.is_some(),
 			kill_dist: s.kill_dist.unwrap_or_default(),
-			rgs,
-			path: init_path,
+			kill_dist_enabled: s.kill_dist.is_some(),
+			rgs: DM::load(init_path.clone()).ok(), // `.ok()` converts from `Result` to `Option`
+			path: init_path.clone(),
+			rgs_cache: String::new(),
 			file_refresh_timer: 0,
 			files: Vec::new(),
 		}
@@ -48,9 +53,12 @@ impl Persistance {
 
 	/// check to see if files should be refreshed yet, if so, refresh them, otherwise, wait
 	/// we don't check every single frame because system calls are slow
-	/// NOTE: file refresh rate is linked to fps
-	// 240 fps would refresh every 1/3rd of a second roughly
-	// 60 fps would take more than a second between refreshes.
+	/// 
+	/// NOTE: file refresh rate is linked to fps.
+	/// 240 fps would refresh every 1/3rd of a second roughly.
+	/// 60 fps would take more than a second between refreshes.
+	/// 
+	/// Could I fix this? yes. Will I fix this??? no.
 	pub fn refresh_files(&mut self) -> anyhow::Result<()> {
 		if self.file_refresh_timer == 0 {
 			self.file_refresh_timer = 100;
@@ -61,11 +69,23 @@ impl Persistance {
 					f.expect("error reading specific directory").path()
 				})
 				.collect();
+			
+			// only .ron files that aren't settings.ron
+			self.files.retain(|f| f.extension().unwrap_or_default() == "ron");
+			self.files.retain(|f| f.file_name().unwrap_or_default() != "settings.ron");
+			
+			self.update_rgs_and_cache();
 		} else {
 			self.file_refresh_timer -= 1;
 		}
 
 		Ok(())
+	}
+
+	/// update the cache and rgs
+	fn update_rgs_and_cache(&mut self) {
+		self.rgs_cache = fs::read_to_string(&self.path).unwrap_or("ERROR reading file".to_string());
+		self.rgs = DM::load_from_string(&self.rgs_cache).ok();
 	}
 
 	/// update kill distance enable/disable
@@ -83,45 +103,52 @@ impl Persistance {
 		ui: &mut Ui,
 		s: &mut Settings,
 	) {
-		ui.heading("Simulation Settings");
+		ui.horizontal(|ui| {
+			ui.heading("Simulation Settings");
+			ui.add_space(120.0);
+			widgets::global_dark_light_mode_buttons(ui);
+		});
 		egui::Grid::new("Settings Grid")
-			.num_columns(2)
-			.striped(true)
-			.show(ui, |ui| {
-				ui.label("time multiplier");
-				ui.add(
-					widgets::DragValue::new(&mut s.dt_multiplier)
-					.clamp_range(0.0..=MAX)
-					.speed(0.1)
-				);
-				ui.end_row();
+		.num_columns(2)
+		.striped(true)
+		.show(ui, |ui| {
+			// ui.label("theme");
+			// ui.end_row();
+
+			ui.label("time multiplier");
+			ui.add(
+				widgets::DragValue::new(&mut s.dt_multiplier)
+				.clamp_range(0.0..=MAX)
+				.speed(0.1)
+			);
+			ui.end_row();
 				
-				ui.label("simulations per frame");
-				ui.add(
-					widgets::DragValue::new(&mut s.sims_per_frame)
-					.clamp_range(1..=std::u16::MAX)
-					.speed(0.25)
-				);
-				ui.end_row();
+			ui.label("simulations per frame");
+			ui.add(
+				widgets::DragValue::new(&mut s.sims_per_frame)
+				.clamp_range(1..=std::u16::MAX)
+				.speed(0.25)
+			);
+			ui.end_row();
 				
-				ui.label("# of particles");
-				ui.add(
-					widgets::DragValue::new(&mut s.count)
-					.speed(0.0)
-				);
-				ui.end_row();
-				
-				ui.label("kill distance");
-				ui.vertical(|ui| {
-					ui.checkbox(&mut self.kill_dist_enabled, "enable");
-					if self.kill_dist_enabled {
-						ui.add(
-							widgets::DragValue::new(&mut self.kill_dist)
-							.clamp_range(0.0..=Self::max_kill_dist())
-						);
-					}
-				});
+			ui.label("# of particles");
+			ui.add(
+				widgets::DragValue::new(&mut s.count)
+				.speed(0.0)
+			);
+			ui.end_row();
+			
+			ui.label("kill distance");
+			ui.vertical(|ui| {
+				ui.checkbox(&mut self.kill_dist_enabled, "enable");
+				if self.kill_dist_enabled {
+					ui.add(
+						widgets::DragValue::new(&mut self.kill_dist)
+						.clamp_range(0.0..=Self::max_kill_dist())
+					);
+				}
 			});
+		});
 		ui.separator();
 		
 		self.update_settings(s);
@@ -136,8 +163,9 @@ impl Persistance {
 
 		ui.heading("Particle Distribution Settings");
 		ui.horizontal(|ui| {
-			self.file_picker(ui);
-			ui.separator();
+			ui.group(|ui| {
+				self.file_picker(ui);
+			});
 			self.disp(ui);
 		});
 	}
@@ -152,23 +180,26 @@ impl Persistance {
 					.into_string().unwrap();
 
 				if ui.button(f_name).clicked() {
-					self.rgs = dbg!(DM::load(each.clone())).ok(); // converts from result to option
 					self.path = each;
+					self.update_rgs_and_cache();
 				}
 			}
 		});
 	}
-
 	
 	/// display the selected distribuion method
 	fn disp(&mut self, ui: &mut Ui) {
 		ui.vertical(|ui| {
 			ui.label(format!("selected file: {}", self.path_name()));
-			ui.separator();
-			if let Some(value) = &self.rgs {
-				ui.label(format!("value: {:?}", value));
+			if self.rgs.is_some() { // check to make sure rgs is valid
+				ui.add(
+					egui::TextEdit::multiline(&mut self.rgs_cache)
+					.font(egui::TextStyle::Monospace)
+					.interactive(false)
+				);
 			} else {
-				ui.colored_label(egui::Color32::RED, "ERROR: not valid file");
+				ui.separator();
+				ui.colored_label(egui::Color32::LIGHT_RED, "ERROR: not valid file");
 			}
 		});
 	}

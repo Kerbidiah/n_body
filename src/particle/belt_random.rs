@@ -6,6 +6,9 @@ use rand::rngs::ThreadRng;
 
 use macroquad::math::Vec2;
 
+use egui_macroquad::egui;
+use egui::Ui;
+
 use super::tools::*;
 use super::Particle;
 use super::RandomParticleGen;
@@ -71,16 +74,23 @@ impl Default for Direction {
 	}
 }
 
+impl Direction {
+	/// returns the angle between a tangential vector in the given direction and the radius in radians
+	pub fn get_angle_offset(&self) -> f32 {
+		match self {
+			Direction::CCW => FRAC_PI_2, // FRAC_PI_2 is 90 degrees in radians
+			Direction::CW => -1.0 * FRAC_PI_2,
+		}
+	}
+}
+
 impl RandomParticleGen for BeltRandomGen {
 	fn gen(&self, rng: &mut ThreadRng) -> Particle {
 		let pos = random_vec_full_circle(rng, self.radius) + self.offset();
 
-		// find angle perpendicular to position
+		// find random angle perpendicular to position
 		let mut theta = Vec2::X.angle_between(pos);
-		theta += match self.direction {
-			Direction::CCW => FRAC_PI_2,
-			Direction::CW => -1.0 * FRAC_PI_2,
-		};
+		theta += self.direction.get_angle_offset();
 
 		// use angle to make velocity vector
 		let vel = random_vec(rng, self.vel, self.vel_angle.radians().plus(theta));

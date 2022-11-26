@@ -42,10 +42,17 @@ impl DistributionMethod {
 		Ok(contents.strip_enum())
 	}
 	
+	/// read a .ron file from disk and deserialize the contents to a `DistributionMethod` enum
 	pub fn load(path: PathBuf) -> anyhow::Result<Self> {
-		// read a .ron file and deserialize the contents to a `DistributionMethod` enum
 		let file_bytes = fs::read(path)?;
-		let contents: Self = ron::de::from_bytes(&file_bytes)?;
+		let contents = ron::de::from_bytes(&file_bytes)?;
+		
+		Ok(contents)
+	}
+
+	/// read a `&str` with the same format as a .ron and deserialize the contents to a `DistributionMethod` enum
+	pub fn load_from_string(s: &str) -> anyhow::Result<Self> {
+		let contents = ron::de::from_str(s)?;
 		
 		Ok(contents)
 	}

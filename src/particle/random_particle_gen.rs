@@ -10,6 +10,8 @@ use ron::ser;
 
 use rayon::prelude::*;
 
+use egui_macroquad::egui::Ui;
+
 use super::Particle;
 
 use crate::config::{DistributionMethod, my_config};
