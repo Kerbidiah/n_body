@@ -8,7 +8,7 @@ use macroquad::prelude::*;
 
 use egui_macroquad;
 use egui_macroquad::egui;
-use egui::{Pos2, widgets};
+use egui::Pos2;
 
 use crate::controls;
 use crate::particle;

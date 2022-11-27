@@ -6,9 +6,6 @@ use rand::rngs::ThreadRng;
 
 use macroquad::math::Vec2;
 
-use egui_macroquad::egui;
-use egui::Ui;
-
 use super::tools::*;
 use super::Particle;
 use super::RandomParticleGen;

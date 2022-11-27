@@ -1,3 +1,5 @@
+#![allow(clippy::new_without_default)]
+
 #[derive(Debug)]
 pub struct MovingAverage {
 	/// which index is the next to be replaced

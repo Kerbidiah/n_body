@@ -25,7 +25,7 @@ pub struct Persistance {
 	/// this exists so we can show the file's contents in the UI w/o
 	/// having to load it from disk every single frame
 	rgs_cache: String,
-	/// how many frames untill files are refreshed
+	/// how many frames until files are refreshed
 	file_refresh_timer: u16,
 	/// list of all `.ron` files that aren't `settings.ron`
 	files: Vec<PathBuf>,
@@ -38,14 +38,14 @@ impl Persistance {
 	}
 
 	/// create a new persistance struct with a bunch of default values.
-	/// `init_path` is the initial path to the `DistributionMethod`	(aka `DM`)
+	/// `init_path` is the initial path to the `DistributionMethod` (aka `DM`)
 	pub fn new(init_path: PathBuf, s: &Settings) -> Self {
 		Self {
 			kill_dist: s.kill_dist.unwrap_or_default(),
 			kill_dist_enabled: s.kill_dist.is_some(),
 			rgs: DM::load(init_path.clone()).ok(), // `.ok()` converts from `Result` to `Option`
-			path: init_path.clone(),
-			rgs_cache: String::new(),
+			path: init_path,
+			rgs_cache: String::new(), // TODO: check that this is ok
 			file_refresh_timer: 0,
 			files: Vec::new(),
 		}
@@ -83,6 +83,7 @@ impl Persistance {
 	}
 
 	/// update the cache and rgs
+	#[allow(clippy::or_fun_call)] // get the clippy linter to shut up about this lint
 	fn update_rgs_and_cache(&mut self) {
 		self.rgs_cache = fs::read_to_string(&self.path).unwrap_or("ERROR reading file".to_string());
 		self.rgs = DM::load_from_string(&self.rgs_cache).ok();
