@@ -13,6 +13,7 @@ pub mod physics;
 pub mod config;
 pub mod game_loop;
 pub mod start_screen;
+pub mod mov_avg;
 
 #[macroquad::main("n-body simulation")] // macroquad entry point, also title of window
 async fn main() -> anyhow::Result<()> {
@@ -28,9 +29,11 @@ async fn main() -> anyhow::Result<()> {
 
 	// generate the particles
 	let mut bodies = rgs.gen_multi(s.count);
-	bodies[0].pos = Vec2::ZERO; // move the first particle to the center
-	bodies[0].vel = Vec2::ZERO; // set vel to 0
-	bodies[0].mass = 50.0; // make it much heavier (kinda like a star)
+
+	// modify the first particle to be like a star
+	bodies[0].pos = Vec2::ZERO; // move to center
+	bodies[0].vel = Vec2::ZERO;
+	bodies[0].mass = 50.0;
 	bodies[0].radius(); // recompute raidus since we changed mass
 
 	game_loop::game_loop(&mut bodies, &mut cam, s).await;

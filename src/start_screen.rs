@@ -29,6 +29,8 @@ pub async fn start_screen(
 	config_screen(settings_path, method_path).await
 }
 
+/// display splash screen.
+/// shows the different resources I used, version, my name, and email
 pub async fn splash_screen() {
 	use credits::Link;
 	let links = Link::source_list();

@@ -1,7 +1,9 @@
 use std::cell::RefCell;
 
 use iter_tools::Itertools;
+
 use macroquad::time;
+
 use rayon::prelude::*;
 
 use crate::particle::Particle;
@@ -12,13 +14,8 @@ pub fn physics_loop(bodies: &mut Vec<RefCell<&mut Particle>>, steps_per: u16, ti
 	let dt = time::get_frame_time() / (steps_per as f32) * time_scaling; // time increment per simulation
 
 	for _ in 0..steps_per {
-		// calc gravity between each pair
 		gravity(bodies);
-
-		// move bodies
-		bodies.par_iter_mut().for_each(|b| b.borrow_mut().step(dt));
-
-		// calc collisions
+		move_bodies(bodies, dt);
 		collisions(bodies);
 	}
 }
@@ -37,4 +34,9 @@ pub fn collisions(bodies: &mut Vec<RefCell<&mut Particle>>) {
 	});
 
 	bodies.retain(|b| !b.borrow().collided);
+}
+
+/// move bodies
+pub fn move_bodies(bodies: &mut Vec<RefCell<&mut Particle>>, dt: f32) {
+	bodies.par_iter_mut().for_each(|b| b.borrow_mut().step(dt));
 }
