@@ -1,4 +1,4 @@
-// #![windows_subsystem = "windows"] // make the terimnal not show up
+#![windows_subsystem = "windows"] // make the terminal not show up
 
 use std::path::PathBuf;
 
@@ -15,7 +15,20 @@ pub mod game_loop;
 pub mod start_screen;
 pub mod mov_avg;
 
-#[macroquad::main("n-body simulation")] // macroquad entry point, also title of window
+
+/// macroquad configuration
+pub fn window_conf() -> Conf {
+	Conf {
+		window_title: "n-body simulation".to_string(),
+		window_width: 1920,
+		window_height: 1080,
+		high_dpi: true,
+		..Default::default()
+	}
+}
+
+
+#[macroquad::main(window_conf)] // macroquad entry point and configuration
 async fn main() -> anyhow::Result<()> {
 	let settings_path = PathBuf::from("settings.ron");
 	let method_path = PathBuf::from("belt.ron");

@@ -8,7 +8,7 @@ use macroquad::prelude::*;
 
 use egui_macroquad;
 use egui_macroquad::egui;
-use egui::Pos2;
+use egui::{Pos2, widgets};
 
 use crate::controls;
 use crate::particle;
@@ -76,7 +76,7 @@ pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: config
 			egui::Window::new("Info")
 				.default_pos(Pos2::ZERO)
 				.show(egui_ctx, |ui| {
-					ui.style_mut().visuals.dark_mode = true; // force dark mode
+					widgets::global_dark_light_mode_buttons(ui);
 					egui::Grid::new("info table")
 						.num_columns(2)
 						.show(ui, |ui| {
