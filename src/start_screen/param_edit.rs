@@ -11,6 +11,7 @@ use egui_macroquad::egui;
 use egui_macroquad::egui::{widgets, Ui};
 
 use crate::config::prelude::*;
+use crate::particle::*;
 
 #[derive(Debug, Clone)]
 /// stores the state of the UI and options and stuff so it can persist between frames
@@ -161,9 +162,7 @@ impl Persistance {
 
 		ui.heading("Particle Distribution Settings");
 		ui.horizontal(|ui| {
-			ui.group(|ui| {
-				self.file_picker(ui);
-			});
+			self.file_picker(ui);
 			self.disp(ui);
 		});
 	}
@@ -171,16 +170,31 @@ impl Persistance {
 	/// file picker UI
 	fn file_picker(&mut self, ui: &mut Ui) {
 		ui.vertical(|ui| {
-			for each in self.files.clone() {
-				let f_name = each
-					.file_name().unwrap()
-					.to_os_string()
-					.into_string().unwrap();
+			if !self.files.is_empty() {
+				ui.group(|ui| {
+					for each in self.files.clone() {
+						let f_name = each
+							.file_name().unwrap()
+							.to_os_string()
+							.into_string().unwrap();
+		
+						if ui.button(f_name).clicked() {
+							self.path = each;
+							self.update_rgs_and_cache();
+						}
+					}
+				});
+			}
 
-				if ui.button(f_name).clicked() {
-					self.path = each;
-					self.update_rgs_and_cache();
-				}
+			if ui.button("create template files").clicked() {
+				let plain_fname = PathBuf::from("plain_template.ron");
+				let belt_fname = PathBuf::from("belt_template.ron");
+
+				let plain = DM::Plain(PlainRandomGen::default());
+				let belt = DM::Belt(BeltRandomGen::default());
+
+				plain.write(plain_fname).unwrap();
+				belt.write(belt_fname).unwrap();
 			}
 		});
 	}

@@ -83,7 +83,6 @@ impl DistributionMethod {
 		self.corresponding() == other
 	}
 
-	#[cfg(test)]
 	/// serialize `self` to the given file
 	pub fn write(&self, path: PathBuf) -> anyhow::Result<()> {
 		let contents = ron::ser::to_string_pretty(self, my_config())?;

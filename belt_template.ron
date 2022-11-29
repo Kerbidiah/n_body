@@ -5,7 +5,7 @@ Belt(BeltRandomGen(
 		max: 20.0,
 	),
 	vel: MinMax(
-		min: 0.0,
+		min: 0.005,
 		max: 0.1,
 	),
 	vel_angle: MinMax(

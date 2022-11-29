@@ -33,7 +33,7 @@ async fn main() -> anyhow::Result<()> {
 	let settings_path = PathBuf::from("settings.ron");
 	let method_path = PathBuf::from("belt.ron");
 
-	let (s, rgs) = start_screen::start_screen(settings_path, method_path).await;
+	let (mut s, rgs) = start_screen::start_screen(settings_path, method_path).await;
 
 	// setup the camera
 	let mut cam = Camera2D::default();
@@ -49,7 +49,7 @@ async fn main() -> anyhow::Result<()> {
 	bodies[0].mass = 50.0;
 	bodies[0].radius(); // recompute raidus since we changed mass
 
-	game_loop::game_loop(&mut bodies, &mut cam, s).await;
+	game_loop::game_loop(&mut bodies, &mut cam, &mut s).await;
 
 	Ok(())
 }

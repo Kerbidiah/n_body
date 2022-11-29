@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 
+use egui_macroquad::egui::Ui;
 use rayon::prelude::*;
 
 use macroquad::camera::Camera2D;
@@ -19,7 +20,7 @@ use crate::mov_avg::MovingAverage;
 use particle::Particle;
 
 
-pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: config::Settings) {
+pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: &mut config::Settings) {
 	// convert from Vec<Particle> to Vec<RefCell<&mut Particle>>
 	let mut bodies: Vec<RefCell<&mut particle::Particle>> = bodies
 		.par_iter_mut()
@@ -36,6 +37,7 @@ pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: config
 	let mut fps_history = MovingAverage::new();
 	let mut frame_time_history = MovingAverage::new();
 	let mut killed_by_dist: usize = 0;
+	let mut fps_goal: i32 = 60;
 	loop {
 		clear_background(BLACK);
 
@@ -77,6 +79,19 @@ pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: config
 				.default_pos(Pos2::ZERO)
 				.show(egui_ctx, |ui| {
 					widgets::global_dark_light_mode_buttons(ui);
+					
+					// TODO: use a selectable label instead
+					// fps goal buttons
+					ui.horizontal(|ui| {
+						ui.label("desired fps");
+						ui.add_space(20.0);
+						fps_goal = fps_select_button(15, fps_goal, ui);
+						fps_goal = fps_select_button(30, fps_goal, ui);
+						fps_goal = fps_select_button(60, fps_goal, ui);
+						fps_goal = fps_select_button(120, fps_goal, ui);
+						fps_goal = fps_select_button(240, fps_goal, ui);
+					});
+
 					egui::Grid::new("info table")
 						.num_columns(2)
 						.show(ui, |ui| {
@@ -86,6 +101,10 @@ pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: config
 
 							ui.label("frame time (ms)");
 							ui.label((frame_time_history.avg() * 1000.0).to_string());
+							ui.end_row();
+							
+							ui.label("sims per frame");
+							ui.label(s.sims_per_frame.to_string());
 							ui.end_row();
 
 							ui.label("# bodies");
@@ -100,10 +119,37 @@ pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: config
 		});
 
 		egui_macroquad::draw(); // draw UI
+		
+		adaptive_sims_per_frame(s, fps_goal);
 
 		// advance to the next frame after 1/60th of a second has elapsed since previous frame
 		// note: if you're screen has a higher refresh rate (like my laptop, 240Hz) it will instead
 		// be 1/refresh_rate seconds, so 1/240th of a second for my laptop
 		next_frame().await
+	}
+}
+
+fn fps_select_button(n: i32, fps: i32, ui: &mut Ui) -> i32 {
+	if ui.button(n.to_string()).clicked() {
+		n
+	} else {
+		fps
+	}
+}
+
+fn adaptive_sims_per_frame(s: &mut config::Settings, goal: i32) {
+	
+	// to make the code more concise
+	let fps = get_fps() as f32;
+	let g = goal as f32;
+	let spf = s.sims_per_frame as f32;
+	
+	let up_pct = (spf + 1.0) / spf;
+	let dn_pct = (spf - 1.0) / spf;
+	
+	if g * up_pct < fps {
+		s.sims_per_frame += 1;
+	} else if (spf > 1.0) && (g * dn_pct) > fps {
+		s.sims_per_frame -= 1;
 	}
 }
