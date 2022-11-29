@@ -1,3 +1,5 @@
 /target
 /.fleet
 flamegraph.svg
+belt_template.ron
+plain_template.ron
