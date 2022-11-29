@@ -1,8 +1,0 @@
-Plain(PlainRandomGen(
-	max_radius: 0.0,
-	max_vel: 0.0,
-	mass: MinMax(
-		min: 0.0,
-		max: 1.0,
-	),
-))
