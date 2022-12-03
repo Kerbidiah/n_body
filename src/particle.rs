@@ -1,19 +1,22 @@
 use std::cell::RefCell;
 use std::f32::consts::*;
 
-use macroquad::math::Vec2; // Vec2 is a 2 dimenstional 32-bit float vector
+use macroquad::math::Vec2; // Vec2 is a 2 dimenstional 32-bit, floating point vector
 use macroquad::{color, shapes};
+
 
 pub mod belt_random;
 pub mod plain_random;
 mod random_particle_gen;
 mod tools; // this refers to src/particle/tools.rs not src/tools.rs
 
+
 // any use of particle.rs will automatically use all of the following
 pub use belt_random::BeltRandomGen;
 pub use plain_random::PlainRandomGen;
 pub use random_particle_gen::RandomParticleGen;
 pub use tools::MinMax;
+
 
 /// a structure to represent a particle
 #[derive(Debug, Clone)]
@@ -31,7 +34,6 @@ pub struct Particle {
 }
 
 impl Particle { // functions/methods for particles
-
 	/// gravitational constant
 	pub const G: f32 = 6.6743e-11;
 
@@ -55,7 +57,7 @@ impl Particle { // functions/methods for particles
 	}
 
 	/// adjusts position and velocity according to the given acceleration and time step
-	// "&mut self" means this function takes a mutable reference to a Particle
+	/// `&mut self` means this function takes a mutable reference to a `Particle`
 	pub fn step(&mut self, dt: f32) {
 		self.pos += (0.5 * self.accel * dt.powi(2)) + (self.vel * dt);
 		self.vel += self.accel * dt;
@@ -85,7 +87,7 @@ impl Particle { // functions/methods for particles
 	}
 
 	/// apply gravitational acceleration to the given `Particles`
-	// RefCell allows the value contained within it to be mutable even if the RefCell itself is immutable
+	/// RefCell allows the value contained within it to be mutable even if the RefCell itself is immutable
 	pub fn grav(a: &RefCell<&mut Self>, b: &RefCell<&mut Self>) {
 		let mag = Self::G / (a.borrow().dist_sqrd(&b.borrow()));
 		let dirc = a.borrow().diff(&b.borrow()).normalize();
@@ -147,6 +149,7 @@ impl Particle { // functions/methods for particles
 mod tests {
 	use super::*;
 
+	
 	fn grav_test(i: i32, dt: f32) -> (f32, f32) {
 		let grav = Vec2::new(0.0, -9.81);
 		let mut particle = Particle::new(Vec2::ZERO, Vec2::ZERO, 1.0);

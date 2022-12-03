@@ -6,6 +6,7 @@ use macroquad::camera::Camera2D;
 use macroquad::math::Vec2;
 use macroquad::prelude::*; // import everything in the macroquad prelude (stuff that is frequently used)
 
+
 // let rust know that these "modules" are part of our code
 pub mod controls;
 pub mod particle;
@@ -27,7 +28,14 @@ pub fn window_conf() -> Conf {
 	}
 }
 
-
+/// main fucntion. where it all begins.
+/// the `async` is required by macroquad
+/// 
+/// **ACADEMIC INTEGRITY STATEMENT**
+/// I have not used source code obtained from any other unauthorized
+/// source, either modified or unmodified.  Neither have I provided
+/// access to my code to another. The project I am submitting
+/// is my own original work.
 #[macroquad::main(window_conf)] // macroquad entry point and configuration
 async fn main() -> anyhow::Result<()> {
 	let settings_path = PathBuf::from("settings.ron");

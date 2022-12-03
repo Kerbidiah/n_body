@@ -3,8 +3,9 @@ use macroquad::window;
 use macroquad::input;
 use macroquad::prelude::set_camera;
 use macroquad::prelude::KeyCode;
-// use macroquad::Window;
 
+
+/// how much to multiply/divied the zoom by
 const ZOOM_FACTOR: f32 = 1.5;
 
 /// controls the zoom level of the camera
@@ -20,7 +21,7 @@ pub fn zoom(cam: &mut Camera2D) {
 	set_camera(cam);
 }
 
-// correct for aspect ratio so circles look circular and stuff like that
+/// correct for aspect ratio so circles look circular and stuff like that
 pub fn fix_aspect_ratio(cam: &mut Camera2D) {
 	cam.zoom.y = cam.zoom.x * (window::screen_width() / window::screen_height());
 }

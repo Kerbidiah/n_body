@@ -580,7 +580,7 @@ dependencies = [
 
 [[package]]
 name = "n_body"
-version = "0.5.3"
+version = "0.5.4"
 dependencies = [
  "anyhow",
  "egui-macroquad",

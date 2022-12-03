@@ -1,16 +1,17 @@
-use std::f32::consts::FRAC_PI_2; // pi / 2
+use std::f32::consts::FRAC_PI_2; // pi/2
 
-use serde::{Deserialize, Serialize};
+use macroquad::math::Vec2;
 
 use rand::rngs::ThreadRng;
 
-use macroquad::math::Vec2;
+use serde::{Deserialize, Serialize};
 
 use super::tools::*;
 use super::Particle;
 use super::RandomParticleGen;
 
 use crate::config::DistributionMethod;
+
 
 /// structure to represent settings for randomly generating `Particle`s in a belt like region.
 /// The direction of their velocities is perpendicularly relative to their position
@@ -25,14 +26,14 @@ pub struct BeltRandomGen {
 	pub radius: MinMax,
 	/// speed
 	pub vel: MinMax,
-	/// tangent angle of velocity to position in **degrees**
+	/// tangent angle of velocity to the circle around the `center` point in **degrees**
 	pub vel_angle: MinMax,
 	/// direction of orbit
 	pub direction: Direction,
-	/// a negative mass might cause some interesting results...
 	pub mass: MinMax,
 }
 
+/// an enum to represent which direction the particles are traveling
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Direction {
 	/// clockwise
@@ -42,6 +43,7 @@ pub enum Direction {
 }
 
 impl BeltRandomGen {
+	/// create a new `BeltRandomGen` structure
 	pub fn new(
 		offset: Vec2,
 		radius: MinMax,
@@ -60,12 +62,14 @@ impl BeltRandomGen {
 	}
 
 	/// returns the center offset as a `Vec2`
+	#[inline(always)] // strong *recomendation* to the compiler to inline this function
 	fn offset(&self) -> Vec2 {
 		Vec2::from_slice(&self.center)
 	}
 }
 
 impl Default for Direction {
+	/// counter clock-qise is the default
 	fn default() -> Self {
 		Self::CCW
 	}
@@ -102,7 +106,9 @@ impl RandomParticleGen for BeltRandomGen {
 	}
 }
 
+// for documentation, see the `RandomParticleGen` trait documentation
 impl Default for BeltRandomGen {
+	/// implementation of the `Default` trait for `BeltRandomGen`
 	fn default() -> Self {
 		Self {
 			center: [0.0, 0.0],

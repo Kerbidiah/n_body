@@ -11,10 +11,12 @@ use crate::config::prelude::*;
 use crate::particle::RandomParticleGen;
 use crate::controls;
 
+use param_edit::Persistance;
+
+
 pub mod credits;
 pub mod param_edit;
 
-use param_edit::Persistance;
 
 /// display the splash screen then display the configuration screen
 pub async fn start_screen(
@@ -24,7 +26,7 @@ pub async fn start_screen(
 	splash_screen().await;
 	
 	let mut cam = Camera2D::default();
-	controls::fix_aspect_ratio(&mut cam); // do this now so the initial display later on is correct from frame 1
+	controls::fix_aspect_ratio(&mut cam); // do this now so the display is correct from frame 1
 	
 	config_screen(settings_path, method_path).await
 }
@@ -86,7 +88,6 @@ async fn config_screen(
 				.anchor(Align2::CENTER_CENTER, Vec2::ZERO)
 				.collapsible(false)
 				.resizable(false)
-				// .title_bar(false)
 				.show(egui_ctx, |ui| {
 					p.param_edit(ui, &mut settings);
 					p.rand_edit(ui);

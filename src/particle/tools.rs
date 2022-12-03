@@ -4,16 +4,18 @@ use std::ops::{Range, RangeInclusive};
 use macroquad::math;
 use macroquad::math::Vec2;
 
+use rand::Rng;
+use rand::rngs::ThreadRng;
+
 use serde::{Deserialize, Serialize};
 
-use rand::rngs::ThreadRng;
-use rand::Rng;
 
 /// generates a random angle between the given bounds in radians using the given `ThreadRng` generator.
 pub fn random_angle(rng: &mut ThreadRng, r: MinMax) -> f32 {
 	r.exc_rand(rng)
 }
 
+/// angle (in radians) for a full circle
 const FULL_CIRCLE: MinMax = MinMax::new_unchecked(0.0, TAU);
 
 /// generates a random angle from 0 to 2pi radians
@@ -41,7 +43,7 @@ pub fn random_vec_full_circle(rng: &mut ThreadRng, radius: MinMax) -> Vec2 {
 	math::polar_to_cartesian(radius, angle)
 }
 
-/// a structure to represent the min/max bounds of random generation
+/// a structure to represent the min/max bounds off random generation
 #[derive(Debug, Serialize, Deserialize, Clone, Copy)]
 pub struct MinMax {
 	pub min: f32,
@@ -58,12 +60,13 @@ impl MinMax {
 		}
 	}
 
+	/// create a new `Self` and panic if min > max
 	pub fn new(min: f32, max: f32) -> Self {
 		assert!(min <= max);
 		Self::new_unchecked(min, max)
 	}
 
-	/// return self but in radians
+	/// return self, but in radians
 	pub fn radians(&self) -> Self {
 		Self {
 			min: self.min.to_radians(),
@@ -102,6 +105,7 @@ impl MinMax {
 			max: self.max + x,
 		}
 	}
+
 	/// return `self` with x subtracted from both min and max
 	pub fn minus(&self, x: f32) -> Self {
 		Self {
@@ -109,10 +113,10 @@ impl MinMax {
 			max: self.max - x,
 		}
 	}
-
 }
 
 impl Default for MinMax {
+	/// implementation of the `Default` trait for `MinMax`
 	fn default() -> Self {
 		Self {
 			min: 0.0,

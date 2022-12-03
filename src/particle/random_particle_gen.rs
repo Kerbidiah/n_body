@@ -6,13 +6,14 @@ use anyhow::Ok;
 use rand::rngs::ThreadRng;
 use rand::thread_rng;
 
-use ron::ser;
-
 use rayon::prelude::*;
+
+use ron::ser;
 
 use super::Particle;
 
 use crate::config::{DistributionMethod, my_config};
+
 
 /// a trait to define what a random particle generator is
 pub trait RandomParticleGen: Sync + Debug {
@@ -24,7 +25,6 @@ pub trait RandomParticleGen: Sync + Debug {
 
 	/// generate many `Particle`s with the given settings
 	/// this function is automatically written by rust for anything structure that implements this trait
-	// usize could be either a u32 or u64, whichever bit archetecture the code is compiled for
 	fn gen_multi(&self, count: u16) -> Vec<Particle> {
 		(0..count) // range to iterate through
 			.par_bridge() // converts a normal iterator to a parrallel one

@@ -1,4 +1,3 @@
-use std::f32::MAX;
 use std::path::PathBuf;
 use std::fs;
 use std::env;
@@ -13,8 +12,9 @@ use egui_macroquad::egui::{widgets, Ui};
 use crate::config::prelude::*;
 use crate::particle::*;
 
-#[derive(Debug, Clone)]
+
 /// stores the state of the UI and options and stuff so it can persist between frames
+#[derive(Debug, Clone)]
 pub struct Persistance {
 	kill_dist: f32,
 	kill_dist_enabled: bool,
@@ -35,7 +35,7 @@ pub struct Persistance {
 impl Persistance {
 	/// maximum value for kill distance
 	fn max_kill_dist() -> f32 {
-		MAX.sqrt()
+		f32::MAX.sqrt()
 	}
 
 	/// create a new persistance struct with a bunch of default values.
@@ -56,7 +56,7 @@ impl Persistance {
 	/// we don't check every single frame because system calls are slow
 	/// 
 	/// NOTE: file refresh rate is linked to fps.
-	/// 240 fps would refresh every 1/3rd of a second roughly.
+	/// 240 fps would refresh about 4 times per second.
 	/// 60 fps would take more than a second between refreshes.
 	/// 
 	/// Could I fix this? yes. Will I fix this??? no.
@@ -117,7 +117,7 @@ impl Persistance {
 				ui.label("time multiplier");
 				ui.add(
 					widgets::DragValue::new(&mut s.dt_multiplier)
-					.clamp_range(0.0..=MAX)
+					.clamp_range(0.0..=f32::MAX)
 					.speed(0.1)
 				);
 				ui.end_row();
@@ -125,7 +125,7 @@ impl Persistance {
 				ui.label("simulations per frame");
 				ui.add(
 					widgets::DragValue::new(&mut s.sims_per_frame)
-					.clamp_range(1..=std::u16::MAX)
+					.clamp_range(1..=u16::MAX)
 					.speed(0.25)
 				);
 				ui.end_row();

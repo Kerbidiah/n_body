@@ -10,8 +10,9 @@ pub struct MovingAverage {
 
 impl MovingAverage {
 	/// how many numbers are kept in the moving average
-	const NUM: usize = 10;
+	const NUM: usize = 15;
 
+	/// create a new moving average
 	pub fn new() -> Self {
 		Self {
 			index: 0,
@@ -19,7 +20,8 @@ impl MovingAverage {
 			new: false
 		}
 	}
-
+	
+	/// replace the oldest number with `x`
 	pub fn insert(&mut self, x: f32) {
 		if self.new {
 			self.list = [x; Self::NUM];
@@ -32,12 +34,16 @@ impl MovingAverage {
 		}
 	}
 
+	/// replace the oldest number with `x`, converting it to a `f32`
 	pub fn insert_i32(&mut self, x: i32) {
 		self.insert(x as f32);
 	}
 
+	/// calcualte the average
 	pub fn avg(&self) -> f32 {
 		let sum: f32 = self.list.iter().sum();
+
+		// I use len because its more correct (incase I change from an array to a vec at some point)
 		sum / (self.list.len() as f32)
 	}
 }

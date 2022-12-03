@@ -62,13 +62,6 @@ pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: &mut c
 		bodies.iter().for_each(|b| {
 			b.borrow().draw(colors::WHITE);
 		});
-		
-		// print debug info every 30 frames
-		// if frame_counter % 30 == 0 {
-		// 	dbg!(get_fps());
-		// 	dbg!(bodies.len());
-		// 	dbg!(killed_by_dist);
-		// }
 
 		fps_history.insert_i32(get_fps());
 		frame_time_history.insert(get_frame_time());
@@ -80,18 +73,18 @@ pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: &mut c
 				.show(egui_ctx, |ui| {
 					widgets::global_dark_light_mode_buttons(ui);
 					
-					// TODO: use a selectable label instead
 					// fps goal buttons
 					ui.horizontal(|ui| {
 						ui.label("desired fps");
 						ui.add_space(20.0);
-						fps_goal = fps_select_button(15, fps_goal, ui);
-						fps_goal = fps_select_button(30, fps_goal, ui);
-						fps_goal = fps_select_button(60, fps_goal, ui);
-						fps_goal = fps_select_button(120, fps_goal, ui);
-						fps_goal = fps_select_button(240, fps_goal, ui);
+						ui.selectable_value(&mut fps_goal, 15, "15");
+						ui.selectable_value(&mut fps_goal, 30, "30");
+						ui.selectable_value(&mut fps_goal, 60, "60");
+						ui.selectable_value(&mut fps_goal, 120, "120");
+						ui.selectable_value(&mut fps_goal, 240, "240");
 					});
 
+					// stats on simulation
 					egui::Grid::new("info table")
 						.num_columns(2)
 						.show(ui, |ui| {
@@ -120,7 +113,7 @@ pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: &mut c
 
 		egui_macroquad::draw(); // draw UI
 		
-		adaptive_sims_per_frame(s, fps_goal);
+		adaptive_simrate(s, fps_goal);
 
 		// advance to the next frame after 1/60th of a second has elapsed since previous frame
 		// note: if you're screen has a higher refresh rate (like my laptop, 240Hz) it will instead
@@ -129,27 +122,22 @@ pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: &mut c
 	}
 }
 
-fn fps_select_button(n: i32, fps: i32, ui: &mut Ui) -> i32 {
-	if ui.button(n.to_string()).clicked() {
-		n
-	} else {
-		fps
-	}
-}
-
-fn adaptive_sims_per_frame(s: &mut config::Settings, goal: i32) {
-	
-	// to make the code more concise
+/// adjust sims per frame to maintain a `goal` fps
+/// this uses a closed loop control
+fn adaptive_simrate(s: &mut config::Settings, goal: i32) {
+	// variables to make the code more concise
 	let fps = get_fps() as f32;
 	let g = goal as f32;
 	let spf = s.sims_per_frame as f32;
 	
+	// calculate thresholds for incrasing/decresasing sims per frame
 	let up_pct = (spf + 1.0) / spf;
 	let dn_pct = (spf - 1.0) / spf;
 	
-	if g * up_pct < fps {
+	// raise or lower sim rate as needed
+	if (s.sims_per_frame < u16::MAX) && (g * up_pct < fps) {
 		s.sims_per_frame += 1;
-	} else if (spf > 1.0) && (g * dn_pct) > fps {
+	} else if (s.sims_per_frame > 1) && (g * dn_pct) > fps {
 		s.sims_per_frame -= 1;
 	}
 }
