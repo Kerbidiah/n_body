@@ -1,6 +1,5 @@
 use std::cell::RefCell;
 
-use egui_macroquad::egui::Ui;
 use rayon::prelude::*;
 
 use macroquad::camera::Camera2D;
