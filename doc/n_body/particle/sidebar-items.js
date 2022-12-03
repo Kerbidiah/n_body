@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["belt_random",""],["plain_random",""],["random_particle_gen",""],["tools",""]],"struct":[["MinMax","a structure to represent the min/max bounds off random generation"],["Particle","a structure to represent a particle"]],"trait":[["RandomParticleGen","a trait to define what a random particle generator is"]]};

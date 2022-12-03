@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["collisions","calculate collisions"],["gravity","calculate gravity"],["move_bodies","move bodies"],["physics_loop","executes the physics loop `steps_per` times. This allows you to have multiple physics simulations per graphical frame"]]};

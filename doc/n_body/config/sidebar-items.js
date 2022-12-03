@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["DistributionMethod","an enum to represent all the different types of random particle generation we have"],["DistributionMethodEmpty","same as `DistributionMethod`, but empty (to be used for the UI)"]],"fn":[["my_config","return my custom serilization configuration"]],"mod":[["prelude","shorthand stuff"]],"struct":[["Settings",""]]};

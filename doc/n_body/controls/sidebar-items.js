@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["ZOOM_FACTOR","how much to multiply/divied the zoom by"]],"fn":[["fix_aspect_ratio","correct for aspect ratio so circles look circular and stuff like that"],["zoom","controls the zoom level of the camera"]]};

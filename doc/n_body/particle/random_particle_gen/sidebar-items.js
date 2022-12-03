@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":[["RandomParticleGen","a trait to define what a random particle generator is"]]};

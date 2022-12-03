@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["info","display some info about me and the version of the binary in the UI"]],"struct":[["Link","structure to represent a link"]]};

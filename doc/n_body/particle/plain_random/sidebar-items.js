@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["PlainRandomGen","structure to represent settings for randomly generating evently distibuted `Particle`s in a circular region."]]};

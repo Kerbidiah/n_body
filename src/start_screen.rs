@@ -19,6 +19,9 @@ pub mod param_edit;
 
 
 /// display the splash screen then display the configuration screen
+/// `async` means that this function can let the functions called after it start running even
+/// before this function is done executing. The other functions will need to wait if they get to a
+/// point where they need this functions return
 pub async fn start_screen(
 	settings_path: PathBuf,
 	method_path: PathBuf

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["adaptive_simrate","adjust sims per frame to maintain a `goal` fps this uses a closed loop control"],["game_loop",""]]};
