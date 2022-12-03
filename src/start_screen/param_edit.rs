@@ -135,6 +135,9 @@ impl Persistance {
 					widgets::DragValue::new(&mut s.count)
 					.speed(0.0)
 				);
+				if s.count < 2 {
+					s.count = 2
+				}
 				ui.end_row();
 				
 				ui.label("kill distance");

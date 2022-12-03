@@ -69,11 +69,6 @@ impl Particle { // functions/methods for particles
 		other.pos - self.pos
 	}
 
-	// /// this is probably faster than squaring then dividing
-	// pub fn diff_neg2pow(&self, other: &Self) -> Vec2 {
-	// 	self.diff(other).powf(-2.0)
-	// }
-
 	/// finds the distance from `self` to `other`
 	pub fn dist(&self, other: &Self) -> f32 {
 		self.pos.distance(other.pos)
@@ -126,13 +121,6 @@ impl Particle { // functions/methods for particles
 
 	/// multiplier to adjust size of particles
 	const SIZE_MULTIPLIER: f32 = 0.5;
-
-	// /// recalculates the radius
-	// /// The radius is determined by finding the radius of a sphere with a volume of `mass`
-	// pub fn radius(&mut self) {
-	// 	// FRAC_1_PI is 1/pi, multiplying by that is faster than dividing by pi, and is accurate enough
-	// 	self.radius = (0.75 * self.mass * FRAC_1_PI * Self::SIZE_MULTIPLIER).cbrt(); // cbrt is cube root
-	// }
 
 	/// recalculates the radius
 	/// The radius is determined by finding the radius of a circle with an area of `mass`
