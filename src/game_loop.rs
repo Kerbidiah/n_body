@@ -123,7 +123,7 @@ pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: &mut c
 
 /// adjust sims per frame to maintain a `goal` fps
 /// this uses a closed loop control
-fn adaptive_simrate(s: &mut config::Settings, goal: i32) {
+pub fn adaptive_simrate(s: &mut config::Settings, goal: i32) {
 	// variables to make the code more concise
 	let fps = get_fps() as f32;
 	let g = goal as f32;

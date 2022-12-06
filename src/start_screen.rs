@@ -71,7 +71,7 @@ pub async fn splash_screen() {
 /// display configuration screen.
 /// Allows the user to select their random particle distribution method
 /// and modify their settings.
-async fn config_screen(
+pub async fn config_screen(
 	settings_path: PathBuf,
 	method_path: PathBuf
 ) -> (Settings, Box<dyn RandomParticleGen>) {
