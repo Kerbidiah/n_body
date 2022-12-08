@@ -11,7 +11,7 @@ use crate::config::prelude::*;
 use crate::particle::RandomParticleGen;
 use crate::controls;
 
-use param_edit::Persistance;
+use param_edit::Persistence;
 
 
 pub mod credits;
@@ -80,7 +80,7 @@ pub async fn config_screen(
 	let mut settings = Settings::load(settings_path).unwrap_or_default();
 
 	// load random particle distribution method
-	let mut p = Persistance::new(method_path, &settings);
+	let mut p = Persistence::new(method_path, &settings);
 
 	let mut stay = true;
 	while stay {

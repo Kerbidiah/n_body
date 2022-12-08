@@ -5,7 +5,7 @@ use macroquad::prelude::set_camera;
 use macroquad::prelude::KeyCode;
 
 
-/// how much to multiply/divied the zoom by
+/// how much to multiply/divide the zoom by
 const ZOOM_FACTOR: f32 = 1.5;
 
 /// controls the zoom level of the camera

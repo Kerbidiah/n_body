@@ -59,7 +59,7 @@
 
 	</span><span class="kw">for _ in </span><span class="number">0</span>..steps_per { <span class="comment">// simulate `steps_per` times
 		</span>gravity(bodies);
-		move_bodies(bodies, dt);
+		move_particles(bodies, dt);
 		collisions(bodies);
 	}
 }
@@ -81,8 +81,8 @@
 }
 
 <span class="doccomment">/// move bodies
-</span><span class="kw">pub fn </span>move_bodies(bodies: <span class="kw-2">&amp;mut </span>Vec&lt;RefCell&lt;<span class="kw-2">&amp;mut </span>Particle&gt;&gt;, dt: f32) {
-	bodies.par_iter_mut().for_each(|b| b.borrow_mut().step(dt));
+</span><span class="kw">pub fn </span>move_particles(particles: <span class="kw-2">&amp;mut </span>Vec&lt;RefCell&lt;<span class="kw-2">&amp;mut </span>Particle&gt;&gt;, dt: f32) {
+	particles.par_iter_mut().for_each(|b| b.borrow_mut().step(dt));
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="n_body" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

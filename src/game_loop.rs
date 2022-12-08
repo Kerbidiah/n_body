@@ -19,6 +19,7 @@ use crate::mov_avg::MovingAverage;
 use particle::Particle;
 
 
+/// does all the physics and UI stuff after the settings and config stuff is done
 pub async fn game_loop(bodies: &mut Vec<Particle>, cam: &mut Camera2D, s: &mut config::Settings) {
 	// convert from Vec<Particle> to Vec<RefCell<&mut Particle>>
 	let mut bodies: Vec<RefCell<&mut particle::Particle>> = bodies

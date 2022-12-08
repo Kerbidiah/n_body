@@ -261,7 +261,7 @@
 
 <span class="doccomment">/// stores the state of the UI and options and stuff so it can persist between frames
 </span><span class="attribute">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Persistance {
+</span><span class="kw">pub struct </span>Persistence {
 	kill_dist: f32,
 	kill_dist_enabled: bool,
 	<span class="doccomment">/// this is the current rand distribution settings
@@ -278,7 +278,7 @@
 	</span>files: Vec&lt;PathBuf&gt;,
 }
 
-<span class="kw">impl </span>Persistance {
+<span class="kw">impl </span>Persistence {
 	<span class="doccomment">/// maximum value for kill distance
 	</span><span class="kw">fn </span>max_kill_dist() -&gt; f32 {
 		f32::MAX.sqrt()

@@ -16,7 +16,7 @@ pub fn physics_loop(bodies: &mut Vec<RefCell<&mut Particle>>, steps_per: u16, ti
 
 	for _ in 0..steps_per { // simulate `steps_per` times
 		gravity(bodies);
-		move_bodies(bodies, dt);
+		move_particles(bodies, dt);
 		collisions(bodies);
 	}
 }
@@ -38,6 +38,6 @@ pub fn collisions(bodies: &mut Vec<RefCell<&mut Particle>>) {
 }
 
 /// move bodies
-pub fn move_bodies(bodies: &mut Vec<RefCell<&mut Particle>>, dt: f32) {
-	bodies.par_iter_mut().for_each(|b| b.borrow_mut().step(dt));
+pub fn move_particles(particles: &mut Vec<RefCell<&mut Particle>>, dt: f32) {
+	particles.par_iter_mut().for_each(|b| b.borrow_mut().step(dt));
 }

@@ -117,7 +117,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::particle::RandomParticleGen;
 <span class="kw">use </span><span class="kw">crate</span>::controls;
 
-<span class="kw">use </span>param_edit::Persistance;
+<span class="kw">use </span>param_edit::Persistence;
 
 
 <span class="kw">pub mod </span>credits;
@@ -177,7 +177,7 @@
 <span class="doccomment">/// display configuration screen.
 /// Allows the user to select their random particle distribution method
 /// and modify their settings.
-</span><span class="kw">async fn </span>config_screen(
+</span><span class="kw">pub async fn </span>config_screen(
 	settings_path: PathBuf,
 	method_path: PathBuf
 ) -&gt; (Settings, Box&lt;<span class="kw">dyn </span>RandomParticleGen&gt;) {
@@ -186,7 +186,7 @@
 	</span><span class="kw">let </span><span class="kw-2">mut </span>settings = Settings::load(settings_path).unwrap_or_default();
 
 	<span class="comment">// load random particle distribution method
-	</span><span class="kw">let </span><span class="kw-2">mut </span>p = Persistance::new(method_path, <span class="kw-2">&amp;</span>settings);
+	</span><span class="kw">let </span><span class="kw-2">mut </span>p = Persistence::new(method_path, <span class="kw-2">&amp;</span>settings);
 
 	<span class="kw">let </span><span class="kw-2">mut </span>stay = <span class="bool-val">true</span>;
 	<span class="kw">while </span>stay {

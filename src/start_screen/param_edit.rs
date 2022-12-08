@@ -15,7 +15,7 @@ use crate::particle::*;
 
 /// stores the state of the UI and options and stuff so it can persist between frames
 #[derive(Debug, Clone)]
-pub struct Persistance {
+pub struct Persistence {
 	kill_dist: f32,
 	kill_dist_enabled: bool,
 	/// this is the current rand distribution settings
@@ -32,7 +32,7 @@ pub struct Persistance {
 	files: Vec<PathBuf>,
 }
 
-impl Persistance {
+impl Persistence {
 	/// maximum value for kill distance
 	fn max_kill_dist() -> f32 {
 		f32::MAX.sqrt()

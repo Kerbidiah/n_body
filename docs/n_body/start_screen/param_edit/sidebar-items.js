@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Persistance","stores the state of the UI and options and stuff so it can persist between frames"]]};
+window.SIDEBAR_ITEMS = {"struct":[["Persistence","stores the state of the UI and options and stuff so it can persist between frames"]]};
